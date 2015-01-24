@@ -39,9 +39,11 @@ TILE_PROPS = {
   TOURIST_PASSABLE: 'tourist_passable'
 };
 
-TOUR_GUIDE = (function () {
+tilemapInfo = [];
 
-  function build(game) {
+TOURIST = (function () {
+
+  function build(game, nextTourist) {
 
     var sprite = game.add.sprite(0, 0, 'guard_sprite');
     sprite.animations.add('walk_up', [9, 10, 11], 15, true);
@@ -64,17 +66,24 @@ TOUR_GUIDE = (function () {
       facing: DIR.RIGHT,
       tilePos: tilePos,
       lastUpdateTime: 0.0,
-      passableFlag: 'tourist_passable'
+      nextTourist: nextTourist,
+      tilePosHistory: [],
+      passableFlag: TILE_PROPS.TOURIST_PASSABLE
     };
   }
 
-  function update(game, tourGuide) {
-    if (game.time.totalElapsedSeconds() - tourGuide.lastUpdateTime < 1.0) {
-      return;
+  function update(game, tourist) {
+    if (game.time.totalElapsedSeconds() - tourist.lastUpdateTime >= 1.0) {
+      tourist.lastUpdateTime = game.time.totalElapsedSeconds();
+      move(map, tourist, tourist.facing);
     }
-    tourGuide.lastUpdateTime = game.time.totalElapsedSeconds();
-    move(map, tourGuide, tourGuide.facing);
-    updateSpriteCoords(map, tourGuide);
+
+    updateSpriteCoords(map, tourist);
+  }
+
+  function setTilePos(tourist, newTileX, newTileY) {
+    tourist.tilePosHistory.push(tourist.tilePos.clone());
+    tourist.tilePos.set(newTileX, newTileY);
   }
 
   function tileDirOffset(direction) {
@@ -102,6 +111,15 @@ TOUR_GUIDE = (function () {
     return new PIXI.Point(x, y);
   }
 
+  function tileProps(tile) {
+    if (!('gameProps' in tile)) {
+      tile.gameProps = {
+        hasTourist: false
+      };
+    }
+    return tile.gameProps;
+  }
+
   function move(map, tourGuide, direction) {
     var currentTile = map.getTile(tourGuide.tilePos.x, tourGuide.tilePos.y, 0);
     var nextTilePos = tileDirOffset(direction);
@@ -111,9 +129,27 @@ TOUR_GUIDE = (function () {
 
     var nextTile = map.getTile(nextTilePos.x, nextTilePos.y);
 
-    if (tourGuide.passableFlag in  nextTile.properties) {
-      tourGuide.tilePos.set(nextTilePos.x, nextTilePos.y);
+    var nextTileProps = tileProps(nextTile);
+    var currentTileProps = tileProps(currentTile);
+
+    if (tileProps.hasTourist) {
+      return false;
     }
+
+    if (!(tourGuide.passableFlag in nextTile.properties)) {
+      return false;
+    }
+
+    nextTileProps.hasTourist = true;
+    currentTileProps.hasTourist = false;
+
+    if ('gamedata' in currentTile) {
+      arrayRemove(occupants, tourGuide);
+      nextTile.push(tourGuide);
+    }
+    setTilePos(tourGuide, nextTilePos.x, nextTilePos.y);
+
+    return true;
   }
 
   function updateSpriteCoords(map, tourGuide) {
@@ -130,38 +166,33 @@ TOUR_GUIDE = (function () {
 })();
 
 
-TOURIST = (function () {
-  var tourGuide;
-
-  function build(game) {
-    var sprite = game.add.sprite('tourist_sprite');
-    sprite.animations.add('walk_up', [9, 10, 11], 15, true);
-    sprite.animations.add('walk_down', [0, 1, 2], 15, true);
-    sprite.animations.add('walk_left', [6, 7, 8], 15, true);
-    sprite.animations.add('walk_right', [3, 4, 5], 15, true);
-
-    sprite.scale = new PIXI.Point(0.25, 0.25);
-
-    return {
-      sprite: sprite,
-      facing: DIR.RIGHT
-    };
-  }
-
-  function update() {
-  }
-
-  return {
-    build: build,
-    update: update
-  };
-})();
-
-
 var cursors;
 var tourGuide;
+var tourists;
 var map;
 var terrain;
+
+
+function buildTouristChain(game) {
+  var touristList = [];
+
+  var touristPositions = [
+    new PIXI.Point(4, 4),
+    new PIXI.Point(3, 4),
+    new PIXI.Point(2, 4),
+    new PIXI.Point(1, 4),
+  ];
+
+  for (var i = 0; i < touristPositions.length; i++) {
+    var tilePos = touristPositions[i];
+    var nextTourist = i > 0 ? null : touristPositions[i - 1];
+    var tourist = TOURIST.build(game, nextTourist);
+    tourist.tilePos.set(touristPositions[i].x, touristPositions[i].y);
+    touristList.push(tourist);
+  }
+
+  return touristList;
+}
 
 
 function create() {
@@ -180,7 +211,10 @@ function create() {
 
   cursors = game.input.keyboard.createCursorKeys();
 
-  tourGuide = TOUR_GUIDE.build(game);
+  // tourGuide = TOURIST.build(game);
+  tourists = buildTouristChain(game);
+
+  tourGuide = tourists[0];
 }
 
 function update() {
@@ -204,5 +238,7 @@ function update() {
     tourGuide.facing = DIR.RIGHT;
   }
 
-  TOUR_GUIDE.update(game, tourGuide);
+  tourists.forEach(function (tourist) {
+    TOURIST.update(game, tourist);
+  });
 }
