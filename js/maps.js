@@ -17,6 +17,8 @@ LEVELS = (function () {
     level.one.layers.terrain = level.one.map.createLayer('terrain');
     level.one.layers.collision = level.one.map.createLayer('collision');
     level.one.layers.misc = level.one.map.createLayer('misc');
+
+    console.log(level.one.layers.misc);
     // Resize our world to level one initially
     level.one.layers.terrain.resizeWorld();
 
