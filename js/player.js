@@ -3,8 +3,9 @@ var PLAYER = (function () {
   var player, tween,
     moving = false,
     facing = 'down',
-    acting = false,
+    pointing = false,
     showMove = false,
+    tileX, tileY = 0,// position in the tiled world
     movespeed = 50;
 
   var speechBubbles = {
@@ -18,10 +19,14 @@ var PLAYER = (function () {
       x : 30,
       y : 30
     },
-    lightTexture
+    lightTexture;
 
-  function build(game) {
-    player = game.add.sprite(0, 0, 'guard_sprite');
+  function build(game, level, playerPos) {
+    tileX = playerPos.x;
+    tileY = playerPos.y;
+    // Set players position in the world
+    var startCoords = level.two.map.getTile(playerPos.x, playerPos.y);
+    player = game.add.sprite(startCoords.worldX, startCoords.worldY, 'guard_sprite');
 
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
@@ -43,7 +48,8 @@ var PLAYER = (function () {
     // Action animations
     player.animations.add('pushButtonUp', [17], 1, true);
 
-    shadowTexture = game.add.bitmapData(game.width, game.height);
+    console.log(level.two.map)
+    shadowTexture = game.add.bitmapData(1792, 1344);
     lightTexture = game.add.image(0, 0, shadowTexture);
 
     lightTexture.blendMode = Phaser.blendModes.MULTIPLY;
@@ -59,44 +65,42 @@ var PLAYER = (function () {
     return player;
   }
 
+
   function isPointing() {
-    return acting;
+    return pointing;
   }
+
 
   function getFacing() {
     return facing;
   }
 
-  function update(game) {
-    //player.body.velocity.x = player.body.velocity.y = 0;
-
+  function update(game, level) {
+    //  console.log(level);
     // Movement
     if (game.GLOBALS.cursors.right.isDown) {
-      move('right');
+      move('right', level);
     } else if (game.GLOBALS.cursors.left.isDown) {
-      move('left');
+      move('left', level);
     } else if (game.GLOBALS.cursors.down.isDown) {
-      move('down');
+      move('down', level);
     } else if (game.GLOBALS.cursors.up.isDown) {
-      move('up');
+      move('up', level);
     }
     // Action
     if (game.GLOBALS.spacebar.isDown && !moving) {
       // Act
       point();
-      acting = true;
+      pointing = true;
       // Add tile check here for thing
     } else {
-      acting = false;
-
+      pointing = false;
     }
-
 
     // Orders!
     if (game.GLOBALS.mKey.isDown) {
       speechBubbles.go.visible = true;
       speechBubbles.stop.visible = false;
-
       showMove = true;
     } else {
       if (showMove) {
@@ -134,7 +138,7 @@ var PLAYER = (function () {
     shadowTexture.dirty = true;
 
     // Idle
-    if (!acting && !moving) {
+    if (!pointing && !moving) {
       player.animations.stop(facing, true)
     }
   }
@@ -150,8 +154,29 @@ var PLAYER = (function () {
     tween.stop();
   }
 
+  function canMove(dir, level) {
+
+    switch(dir) {
+      case 'left':
+        return MAPINFO.guardPassable(level.two.map, tileX - 1, tileY);
+        break;
+      case 'right':
+        return MAPINFO.guardPassable(level.two.map, tileX + 1, tileY);
+        break;
+      case 'up':
+        return MAPINFO.guardPassable(level.two.map, tileX, tileY - 1);
+        break;
+      case 'down':
+        return MAPINFO.guardPassable(level.two.map, tileX, tileY + 1);
+        break;
+      default:
+        return false;
+        break;
+    }
+  }
+
   // move in a direction
-  function move(dir) {
+  function move(dir, level) {
     // Break early if we are already moving
     if (moving) return false;
 
@@ -162,18 +187,22 @@ var PLAYER = (function () {
       player.animations.stop(dir, true);
       facing = dir;
     // MOVE!
-  } else if(!acting) {
+  } else if(!pointing && canMove(dir, level)) {
       moving = true; // now we are moving
       player.animations.play(dir); // play the direction we are moving in
       tween = game.add.tween(player); // new player tween
       if (dir === 'left') {
         tween.to({x: player.x - 64}, 300);
+        tileX -= 1;
       } else if (dir === 'right') {
         tween.to({x: player.x + 64}, 300);
+        tileX += 1;
       } else if (dir === 'down') {
         tween.to({y: player.y + 64}, 300);
+        tileY += 1
       } else if (dir === 'up') {
         tween.to({y: player.y - 64}, 300);
+        tileY -= 1;
       }
       // What we do when we are done moving
       tween.onComplete.add(function () {doneMoving(dir);});

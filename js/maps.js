@@ -28,7 +28,7 @@ LEVELS = (function () {
 
     // console.log(level.one.layers.misc);
     // Resize our world to level one initially
-    // level.one.layers.terrain.resizeWorld();
+    level.two.layers.logical.resizeWorld();
 
     return level;
   }
@@ -83,13 +83,13 @@ MAPINFO = (function () {
   'use strict';
 
   function guardPassable(map, x, y) {
-    var tile = level.map.getTile(x, y);
+    var tile = map.getTile(x, y);
     return TILE_PROPS.GUARD_PASSABLE in tile.properties;
   }
 
 
   function touristPassable(map, x, y) {
-    var tile = level.map.getTile(x, y);
+    var tile = map.getTile(x, y);
     return TILE_PROPS.TOURIST_PASSABLE in tile.properties;
   }
 
