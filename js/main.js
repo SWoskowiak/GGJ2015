@@ -38,7 +38,7 @@ var GLOBALS = {
 };
 
 // Game objects
-var level,player,touristList,goalCoords;
+var level,player,touristList,goalCoords, music;
 
 // Controls
 var iKey, oKey;
@@ -80,8 +80,8 @@ function create() {
                                  Number(splitPair[1]));
 
   // ~*Music*~
-  var music = game.add.audio('music');
-  music.volume = 0.1;
+  music = game.add.audio('music');
+  music.volume = 0.3;
   music.loop = true;
   music.play();
 }
