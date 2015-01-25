@@ -65,8 +65,22 @@ var PLAYER = (function () {
     return player;
   }
 
+<<<<<<< HEAD
   function update(game, level) {
   //  console.log(level);
+=======
+  function isPointing() {
+    return acting;
+  }
+
+  function getFacing() {
+    return facing;
+  }
+
+  function update(game) {
+    //player.body.velocity.x = player.body.velocity.y = 0;
+
+>>>>>>> 2b7f5a0e36fcfc511a851540a760e61fb104b2f6
     // Movement
     if (game.GLOBALS.cursors.right.isDown) {
       move('right', level);
@@ -202,7 +216,9 @@ var PLAYER = (function () {
   }
 
   return {
+    isPointing: isPointing,
+    getFacing: getFacing,
     build: build,
     update: update
-  }
+  };
 })();
