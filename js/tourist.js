@@ -134,8 +134,7 @@ TOURIST = (function () {
 
   function backupMove(map, tourist) {
     // must be called in reverse-chain order
-    var curTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y);
-    var curTileProps = MAPINFO.tileProps(curTile);
+    var curTileProps = MAPINFO.tileProps(map, tourist.tilePos.x, tourist.tilePos.y);
     curTileProps.occupyingTourist = null;
 
     var prevMove = tourist.moveHistory.pop();
@@ -143,7 +142,7 @@ TOURIST = (function () {
     tourist.facing = prevMove.facing;
 
     var nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
-    MAPINFO.tileProps(nextTile).occupyingTourist = tourist;
+    MAPINFO.tileProps(map, prevMove.tilePos.x, prevMove.tilePos.y).occupyingTourist = tourist;
   }
 
 
@@ -156,8 +155,8 @@ TOURIST = (function () {
 
     var nextTile = map.getTile(nextTilePos.x, nextTilePos.y);
 
-    var nextTileProps = MAPINFO.tileProps(nextTile);
-    var currentTileProps = MAPINFO.tileProps(currentTile);
+    var nextTileProps = MAPINFO.tilePropsFromTile(nextTile);
+    var currentTileProps = MAPINFO.tilePropsFromTile(currentTile);
 
     if (nextTileProps.occupyingTourist !== null) {
       return false;

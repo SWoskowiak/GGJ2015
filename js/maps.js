@@ -77,8 +77,6 @@ DIR = {
 TILE_PROPS = {
   GUARD_PASSABLE: 'guard_passable',
   TOURIST_PASSABLE: 'tourist_passable',
-  TOURIST_SPAWN: 'tourist_spawn',
-  TOURGUIDE_SPAWN: 'tourguide_spawn'
 };
 
 
@@ -86,7 +84,37 @@ MAPINFO = (function () {
   'use strict';
 
 
-  function tileProps(tile) {
+  function guardPassable(map, x, y) {
+    var tile = level.map.getTile(x, y);
+    return TILE_PROPS.GUARD_PASSABLE in tile.properties;
+  }
+
+
+  function touristPassable(map, x, y) {
+    var tile = level.map.getTile(x, y);
+    return TILE_PROPS.TOURIST_PASSABLE in tile.properties;
+  }
+
+
+  function getTourist(map, x, y) {
+    var props = tileProps(level.map, x, y);
+    return props.occoupyingTourist;
+  }
+
+
+  function setTourist(map, x, y, tourist) {
+    var props = tileProps(level.map, x, y);
+    props.occupyingTourist = tourist;
+  }
+
+
+  function tileProps(map, x, y) {
+    var tile = map.getTile(x, y);
+    return tilePropsFromTile(tile);
+  }
+
+
+  function tilePropsFromTile(tile) {
     if (!('tileWorldProps' in tile)) {
       tile.tileWorldProps = {
         occupyingTourist: null
@@ -97,6 +125,9 @@ MAPINFO = (function () {
 
 
   return {
-    tileProps: tileProps
+    guardPassable: guardPassable,
+    getTourist: getTourist,
+    tileProps: tileProps,
+    tilePropsFromTile: tilePropsFromTile
   };
 })();
