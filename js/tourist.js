@@ -16,7 +16,7 @@ TOURIST = (function () {
 
     function extractPosFromCoordPair(s) {
       var splitPair = s.trim().split(/\W/);
-      return new PIXI.Point(Number(splitPair[0]), Number(splitPair[splitPair.length - 1]));
+      return new Phaser.Point(Number(splitPair[0]), Number(splitPair[splitPair.length - 1]));
     }
 
     var guidePosStr = coordPairs.shift();
@@ -52,9 +52,27 @@ TOURIST = (function () {
   }
 
 
+  function setTourGuideFacing(tourGuide, map, direction) {
+    var tileOffset = DIR.toOffset(direction);
+    Phaser.Point.add(tileOffset.clone(), tourGuide.tilePos, tileOffset);
+
+    var touristAtDestTile = MAPINFO.getTourist(map, tileOffset.x, tileOffset.y);
+
+    console.log('poo');
+
+    if (touristAtDestTile && touristAtDestTile.nextTourist === tourGuide) {
+      goingBackward = true;
+    } else {
+      goingBackward = false;
+    }
+
+    tourGuide.facing = direction;
+  }
+
+
   function build(game, map, nextTourist) {
     var sprite = game.add.sprite(0, 0, 'guard_sprite');
-    var tilePos = new PIXI.Point(0, 0);
+    var tilePos = new Phaser.Point(0, 0);
 
     var tourist = {
       sprite: sprite,
@@ -262,13 +280,20 @@ TOURIST = (function () {
   }
 
 
+  function isChainGoingBackward() {
+    return goingBackward;
+  }
+
+
   return {
     build: build,
     stepForward: stepForward,
     stepBackward: stepBackward,
+    setTourGuideFacing: setTourGuideFacing,
     move: move,
     buildChain: buildChain,
     buildChainFromLevel: buildChainFromLevel,
-    updateTourists: updateTourists
+    updateTourists: updateTourists,
+    isChainGoingBackward: isChainGoingBackward
   };
 })();

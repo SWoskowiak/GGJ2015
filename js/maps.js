@@ -68,7 +68,7 @@ DIR = {
       break;
     }
 
-    return new PIXI.Point(x, y);
+    return new Phaser.Point(x, y);
   }
 };
 
@@ -96,7 +96,7 @@ MAPINFO = (function () {
 
   function getTourist(map, x, y) {
     var props = tileProps(map, x, y);
-    return props.occoupyingTourist;
+    return props.occupyingTourist;
   }
 
 
