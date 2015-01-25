@@ -58,7 +58,13 @@ function create() {
   iKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
 
   // Builds out our "player"
-  player = PLAYER.build(game, level, { x:2,  y:4});
+
+  var logicalLayer = MAPINFO.getLayerData(level.current.map, 'logical');
+  var splitPair = logicalLayer.properties.player_spawn;
+  var playerSpawnPos = new Phaser.Point(Number(splitPair[0]),
+                                        Number(splitPair[splitPair.length - 1]));
+  // player = PLAYER.build(game, level, { x:2,  y:4});
+  player = PLAYER.build(game, level, playerSpawnPos);
 
   // ~*Music*~
   var music = game.add.audio('music');

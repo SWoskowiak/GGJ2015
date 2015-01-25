@@ -106,6 +106,11 @@ TILE_PROPS = {
 MAPINFO = (function () {
   'use strict';
 
+  function getLayerData(map, layerName) {
+    return map.layers[map.getLayer(layerName)];
+  }
+
+
   function guardPassable(map, x, y) {
     var tile = map.getTile(x, y);
     return TILE_PROPS.GUARD_PASSABLE in tile.properties;
@@ -150,6 +155,7 @@ MAPINFO = (function () {
     getTourist: getTourist,
     setTourist: setTourist,
     tileProps: tileProps,
-    tilePropsFromTile: tilePropsFromTile
+    tilePropsFromTile: tilePropsFromTile,
+    getLayerData: getLayerData
   };
 })();

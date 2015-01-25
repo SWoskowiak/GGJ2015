@@ -10,13 +10,15 @@ TOURIST = (function () {
 
     // BEGIN Extract spawn positions from logical layer of tilemap
     var logicalLayer = level.map.layers[level.map.getLayer('logical')];
-    var spawnString = logicalLayer.properties.spawns;
+    var spawnString = logicalLayer.properties.tourist_spawns;
     // '1 4 , 1 3, 111       22222  '.split(',')[2].trim().split(' ')
     var coordPairs = spawnString.split(',');
 
     function extractPosFromCoordPair(s) {
-      var splitPair = s.trim().split(/\W/);
-      return new Phaser.Point(Number(splitPair[0]), Number(splitPair[splitPair.length - 1]));
+      var splitPair = s.trim().split(/\W/).filter(Boolean);
+      var pos = new Phaser.Point(Number(splitPair[0]), Number(splitPair[1]));
+      pos.facing = splitPair.length >= 3 ? splitPair[2] : DIR.RIGHT;
+      return pos;
     }
 
     var guidePosStr = coordPairs.shift();
@@ -42,7 +44,7 @@ TOURIST = (function () {
       var tilePos = positions[i];
       var nextTourist = i > 0 ? touristList[i - 1] : null;
       var tourist = TOURIST.build(game, map, nextTourist);
-      tourist.facing = DIR.RIGHT;
+      tourist.facing = positions[i].facing;
       tourist.tilePos.set(positions[i].x, positions[i].y);
       touristList.push(tourist);
       forceUpdateSpriteCoords(map, tourist);
