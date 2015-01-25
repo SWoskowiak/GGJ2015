@@ -38,6 +38,34 @@ LEVELS = (function () {
     level.three.layers.logical = level.three.map.createLayer('logical');
     level.three.layers.doodads = level.three.map.createLayer('doodads');
 
+    function setBreakable(map, x, y) {
+      var doodadLayer = level.three.layers.doodads.index;
+      MAPINFO.tileProps(map, x, y, 'doodads').breakable = true;
+    }
+
+    function setLeverOpensDoor(map, leverX, leverY, doorX, doorY) {
+      var leverProps = MAPINFO.tileProps(map, leverX, leverY, 'doodads');
+      var doorProps = MAPINFO.tileProps(map, doorX, doorY, 'doodads');
+      leverProps.leverOpensDoor = new Phaser.Point(doorX, doorY);
+      doorProps.doodadBlock = true;
+    }
+
+    setBreakable(level.three.map, 3,  11);
+    setBreakable(level.three.map, 18,  13);
+    setBreakable(level.three.map, 18,  17);
+    setBreakable(level.three.map, 23,  12);
+    setBreakable(level.three.map, 25,  4);
+    setBreakable(level.three.map, 7,  4);
+
+    setLeverOpensDoor(level.three.map, 4, 9, 7, 14);
+    setLeverOpensDoor(level.three.map, 13, 11, 14, 14);
+    setLeverOpensDoor(level.three.map, 18, 15, 22, 18);
+    setLeverOpensDoor(level.three.map, 23, 15, 26, 16);
+    setLeverOpensDoor(level.three.map, 23, 13, 25, 10);
+    setLeverOpensDoor(level.three.map, 23, 9, 22, 5);
+    setLeverOpensDoor(level.three.map, 10, 7, 8, 8);
+    setLeverOpensDoor(level.three.map, 1, 1, 3, 4);
+
     return level;
   }
 
@@ -249,8 +277,8 @@ MAPINFO = (function () {
   }
 
 
-  function tileProps(map, x, y) {
-    var tile = map.getTile(x, y);
+  function tileProps(map, x, y, layerName) {
+    var tile = map.getTile(x, y, layerName);
     return tilePropsFromTile(tile);
   }
 
