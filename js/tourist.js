@@ -130,7 +130,7 @@ TOURIST = (function () {
   function backupMove(map, tourist) {
     // must be called in reverse-chain order
     var curTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y);
-    var curTileProps = TILEWORLD.tileProps(curTile);
+    var curTileProps = MAPINFO.tileProps(curTile);
     curTileProps.occupyingTourist = null;
 
     var prevMove = tourist.moveHistory.pop();
@@ -138,7 +138,7 @@ TOURIST = (function () {
     tourist.facing = prevMove.facing;
 
     var nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
-    TILEWORLD.tileProps(nextTile).occupyingTourist = tourist;
+    MAPINFO.tileProps(nextTile).occupyingTourist = tourist;
   }
 
 
@@ -151,8 +151,8 @@ TOURIST = (function () {
 
     var nextTile = map.getTile(nextTilePos.x, nextTilePos.y);
 
-    var nextTileProps = TILEWORLD.tileProps(nextTile);
-    var currentTileProps = TILEWORLD.tileProps(currentTile);
+    var nextTileProps = MAPINFO.tileProps(nextTile);
+    var currentTileProps = MAPINFO.tileProps(currentTile);
 
     if (nextTileProps.occupyingTourist !== null) {
       return false;
