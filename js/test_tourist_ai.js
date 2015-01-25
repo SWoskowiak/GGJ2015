@@ -47,11 +47,7 @@ TOURIST = (function () {
 
   function build(game, nextTourist) {
 
-    var sprite = game.add.sprite(0, 0, 'guard');
-    sprite.animations.add('walk_up', [9, 10, 11], 15, true);
-    sprite.animations.add('walk_down', [0, 1, 2], 15, true);
-    sprite.animations.add('walk_left', [6, 7, 8], 15, true);
-    sprite.animations.add('walk_right', [3, 4, 5], 15, true);
+    var sprite = game.add.sprite(0, 0, 'tourist');
 
     sprite.scale = new PIXI.Point(0.25, 0.25);
 
@@ -75,23 +71,27 @@ TOURIST = (function () {
     };
   }
 
-  function step(game, map, tourist) {
-    // if (game.time.totalElapsedSeconds() - tourist.lastUpdateTime >= 1.0) {
-    // tourist.lastUpdateTime = game.time.totalElapsedSeconds();
+  function stepForward(game, map, tourist) {
     var moved = false;
 
-    // if (tourist.backingUp) {
-      
-    // } else
     if (tourist.nextTourist !== null && tourist.nextTourist.moveHistory.length > 1) {
       var nextTourist_twoMovesBackIndex = tourist.nextTourist.moveHistory.length - 2;
       var nextTourist_twoMovesBack = tourist.nextTourist.moveHistory[nextTourist_twoMovesBackIndex];
       tourist.facing = nextTourist_twoMovesBack.facing;
-      moved = move(map, tourist, tourist.facing);
+    }
+    moved = move(map, tourist, tourist.facing);
 
-    } else {
-      moved = move(map, tourist, tourist.facing);
+    updateSpriteCoords(map, tourist);
 
+    return moved;
+  }
+
+  function stepBackward(game, map, tourist) {
+    var moved = false;
+
+    if (tourist.moveHistory.length > 0) {
+      backupMove(map, tourist);
+      moved = true;
     }
 
     updateSpriteCoords(map, tourist);
@@ -157,16 +157,15 @@ TOURIST = (function () {
 
   function backupMove(map, tourist) {
     // must be called in reverse-chain order
-    prevMove = tourist.moveHistory.pop();
+    var curTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y);
+    var curTileProps = TILEWORLD.tileProps(curTile);
+    curTileProps.occupyingTourist = null;
+
+    var prevMove = tourist.moveHistory.pop();
     tourist.tilePos.set(prevMove.tilePos.x, prevMove.tilePos.y);
     tourist.facing = prevMove.facing;
 
-    var curTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y);
-
-    curTileProps = TILEWORLD.tileProps(curTile);
-    curTileProps.occupyingTourist = null;
-
-    nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
+    var nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
     TILEWORLD.tileProps(nextTile).occupyingTourist = tourist;
   }
 
@@ -208,7 +207,8 @@ TOURIST = (function () {
 
   return {
     build: build,
-    step: step,
+    stepForward: stepForward,
+    stepBackward: stepBackward,
     move: move,
     updateSpriteCoords: updateSpriteCoords
   };
@@ -304,18 +304,18 @@ function update() {
       tourist = GLOB.tourists[i];
       // if step returns false, it means he couldn't move, so
       // don't keep trying to move
-      if (!TOURIST.step(game, GLOB.map, tourist)) {
+      if (!TOURIST.stepForward(game, GLOB.map, tourist)) {
         break;
       }
     }
     GLOB.tourists.forEach(function (tourist) {
     });
   } else if (GLOB.iKey.justUp) {
-    for (i = 0; i < GLOB.tourists.length; i++) {
+    for (i = GLOB.tourists.length - 1; i >= 0; i--) {
       tourist = GLOB.tourists[i];
       // if step returns false, it means he couldn't move, so
       // don't keep trying to move
-      if (!TOURIST.step(game, GLOB.map, tourist)) {
+      if (!TOURIST.stepBackward(game, GLOB.map, tourist)) {
         break;
       }
     }
