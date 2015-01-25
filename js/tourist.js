@@ -58,8 +58,6 @@ TOURIST = (function () {
 
     var touristAtDestTile = MAPINFO.getTourist(map, tileOffset.x, tileOffset.y);
 
-    console.log('poo');
-
     if (touristAtDestTile && touristAtDestTile.nextTourist === tourGuide) {
       goingBackward = true;
     } else {
@@ -121,7 +119,7 @@ TOURIST = (function () {
     }
 
     // updateSpriteCoords(map, tourist);
-    if (move) {
+    if (moved) {
       tweenMove(tourist);
     }
 
@@ -238,7 +236,7 @@ TOURIST = (function () {
   }
 
 
-  function updateTourists(touristList, guardSaysGo, oKey, iKey) {
+  function updateTourists(touristList, currentLevel, guardSaysGo, oKey, iKey) {
     var i, tourist;
 
     if (!guardSaysGo) {
@@ -256,7 +254,7 @@ TOURIST = (function () {
     if (!goingBackward) {
       for (i = 0; i < touristList.length; i++) {
         tourist = touristList[i];
-        if (!TOURIST.stepForward(game, level.two.map, tourist)) {
+        if (!TOURIST.stepForward(game, currentLevel.map, tourist)) {
           break;
         }
       }
@@ -265,7 +263,7 @@ TOURIST = (function () {
         tourist = touristList[i];
         // if step returns false, it means he couldn't move, so
         // don't keep trying to move
-        if (!TOURIST.stepBackward(game, level.two.map, tourist)) {
+        if (!TOURIST.stepBackward(game, currentLevel.map, tourist)) {
           break;
         }
       }

@@ -80,7 +80,7 @@ function updateTourGuideFacing() {
 function update() {
   PLAYER.update(game, level);
   updateTourGuideFacing();
-  TOURIST.updateTourists(touristList, PLAYER.isSayingGo(), oKey, iKey);
+  TOURIST.updateTourists(touristList, level.two, PLAYER.isSayingGo(), oKey, iKey);
 }
 
 // function render() {
