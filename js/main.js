@@ -38,8 +38,6 @@ function create() {
   game.time.desiredFps = 60;
   // Will give you the level object which contains level.one, level.two etc.
   level = LEVELS.build(game);
-  // Builds out our "player"
-  player = PLAYER.build(game, level, { x:2,  y:4});
   // Gives you the cursor key controls
   game.GLOBALS.cursors = game.input.keyboard.createCursorKeys();
   game.GLOBALS.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -48,6 +46,9 @@ function create() {
   touristList = TOURIST.buildChainFromLevel(game, level.two);
   oKey = game.input.keyboard.addKey(Phaser.Keyboard.O);
   iKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
+
+  // Builds out our "player"
+  player = PLAYER.build(game, level, { x:2,  y:4});
 
   // ~*Music*~
   var music = game.add.audio('music');
@@ -64,8 +65,8 @@ function updateTourGuideFacing() {
   if (!PLAYER.isPointing()) {
     return;
   }
-
-  var playerTile = level.two.map.getTileWorldXY(player.x, player.y);
+  var target = level.two.map.getTile(player.tileX, player.tileY);
+  var playerTile = level.two.map.getTileWorldXY(target.worldX, target.worldY);
   var playerOnTourGuide = Phaser.Point.equals(tourGuide.tilePos, new Phaser.Point(playerTile.x, playerTile.y));
 
   if (!playerOnTourGuide) {

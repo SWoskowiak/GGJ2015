@@ -143,6 +143,8 @@ var PLAYER = (function () {
     if (!pointing && !moving) {
       player.animations.stop(facing, true)
     }
+    player.tileX = tileX;
+    player.tileY = tileY;
   }
 
   function point() {
@@ -203,8 +205,8 @@ var PLAYER = (function () {
       }
 
       var offset = 0;
-      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 16;
-      var target = level.two.map.getTile(tileX - offset, tileY + offset);
+      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 8;
+      var target = level.two.map.getTile(tileX, tileY);
       console.log(offset);
       // Tween to tile
       tween.to({x: target.worldX - offset, y: target.worldY + offset}, 300);
