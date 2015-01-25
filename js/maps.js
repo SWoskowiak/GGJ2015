@@ -178,6 +178,7 @@ MAPINFO = (function () {
       if (props.leverOpensDoor !== null) {
         var doorCoord = props.leverOpensDoor;
         removeDoor(map, doorCoord.x, doorCoord.y);
+        props.leverOpensDoor = null;
       }
     }
   }
@@ -257,7 +258,7 @@ MAPINFO = (function () {
     if (!('tileWorldProps' in tile)) {
       tile.tileWorldProps = {
         occupyingTourist: null,
-        leverOpensDoor: null,
+        leverOpensDoor: null, // Point(x, y)
         breakable: false,
         doodadBlock: false,
       };
