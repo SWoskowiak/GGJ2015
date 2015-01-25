@@ -221,19 +221,25 @@ TOURIST = (function () {
 
 
   function updateTourists(touristList, oKey, iKey) {
-    var finishedMoving = touristList.reduce(function (prev, cur, idx, arr) {
-      return (!prev.moving) && (!cur.moving);
-    });
+    var i, tourist;
+    var anyoneMoving = false;
 
+    var touristIndex;
+    for (touristIndex = 0; touristIndex < touristList.length; touristIndex++) {
+      tourist = touristList[touristIndex];
+      if (tourist.moving) {
+        anyoneMoving = true;
+        break;
+      }
+    }
 
-    if (!finishedMoving) {
+    if (anyoneMoving) {
       return;
     }
 
-    console.log('update tourist');
+    console.log('update tourist' + game.time.now, touristList);
 
-    var i, tourist;
-    if (goingBackward) {
+    if (!goingBackward) {
       for (i = 0; i < touristList.length; i++) {
         tourist = touristList[i];
         if (!TOURIST.stepForward(game, level.two.map, tourist)) {
