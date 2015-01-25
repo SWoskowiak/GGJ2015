@@ -118,9 +118,11 @@ function update() {
 
   TOURIST.updateTourists(touristList, level.current, PLAYER.isSayingGo(), oKey, iKey);
 
-  // if (TOURIST.wonTheGame) {
-    
-  // }
+  var tourGuide = touristList[0];
+  if (tourGuide.tilePos.x == goalCoords.x &&
+      tourGuide.tilePos.y == goalCoords.y) {
+    console.log('YOU WON');
+  }
 }
 
 // function render() {
