@@ -95,13 +95,13 @@ MAPINFO = (function () {
 
 
   function getTourist(map, x, y) {
-    var props = tileProps(level.map, x, y);
+    var props = tileProps(map, x, y);
     return props.occoupyingTourist;
   }
 
 
   function setTourist(map, x, y, tourist) {
-    var props = tileProps(level.map, x, y);
+    var props = tileProps(map, x, y);
     props.occupyingTourist = tourist;
   }
 
@@ -110,7 +110,6 @@ MAPINFO = (function () {
     var tile = map.getTile(x, y);
     return tilePropsFromTile(tile);
   }
-
 
   function tilePropsFromTile(tile) {
     if (!('tileWorldProps' in tile)) {

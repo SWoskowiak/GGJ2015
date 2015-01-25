@@ -117,12 +117,12 @@ var PLAYER = (function () {
       }
     }
 
-    speechBubbles.stop.x = speechBubbles.go.x = player.x + 90;
-    speechBubbles.stop.y = speechBubbles.go.y = player.y;
+    speechBubbles.stop.x = speechBubbles.go.x = player.x + 45;
+    speechBubbles.stop.y = speechBubbles.go.y = player.y - 45;
 
     // Lighting draw
     shadowTexture.context.fillStyle = 'rgb(150, 150, 150)';
-    shadowTexture.context.fillRect(0, 0, game.width, game.height);
+    shadowTexture.context.fillRect(0, 0, 1792, 1344);
     // Draw circle of light with a soft edge
     var gradient = shadowTexture.context.createRadialGradient(
       player.x + lightOffset.x, player.y + lightOffset.y, lightRadius * 0.75,
@@ -157,7 +157,6 @@ var PLAYER = (function () {
   }
 
   function canMove(dir, level) {
-
     switch(dir) {
       case DIR.LEFT:
         return MAPINFO.guardPassable(level.two.map, tileX - 1, tileY);
@@ -192,19 +191,23 @@ var PLAYER = (function () {
       moving = true; // now we are moving
       player.animations.play(dir); // play the direction we are moving in
       tween = game.add.tween(player); // new player tween
+
       if (dir === 'left') {
-        tween.to({x: player.x - 64}, 300);
         tileX -= 1;
       } else if (dir === 'right') {
-        tween.to({x: player.x + 64}, 300);
         tileX += 1;
       } else if (dir === 'down') {
-        tween.to({y: player.y + 64}, 300);
         tileY += 1;
       } else if (dir === 'up') {
-        tween.to({y: player.y - 64}, 300);
         tileY -= 1;
       }
+
+      var offset = 0;
+      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 16;
+      var target = level.two.map.getTile(tileX - offset, tileY + offset);
+      console.log(offset);
+      // Tween to tile
+      tween.to({x: target.worldX - offset, y: target.worldY + offset}, 300);
       // What we do when we are done moving
       tween.onComplete.add(function () {doneMoving(dir);});
       // Play the tween
