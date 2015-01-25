@@ -223,12 +223,17 @@ var PLAYER = (function () {
     return true;
   }
 
+  function win() {
+    window.location.href = 'http://www.metmuseum.org/visit/hours-and-admission';
+  }
+
   return {
     isSayingGo: isSayingGo,
     isPointing: isPointing,
     getFacing: getFacing,
     build: build,
     update: update,
+    win: win,
     getTilePos: getTilePos
   };
 })();

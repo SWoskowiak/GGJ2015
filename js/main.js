@@ -83,7 +83,7 @@ function create() {
   var music = game.add.audio('music');
   music.volume = 0.1;
   music.loop = true;
-  //music.play();
+  music.play();
 }
 
 
@@ -122,6 +122,8 @@ function update() {
   if (tourGuide.tilePos.x == goalCoords.x &&
       tourGuide.tilePos.y == goalCoords.y) {
     console.log('YOU WON');
+
+    PLAYER.win(game);
   }
 }
 
