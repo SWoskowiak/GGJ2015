@@ -66,13 +66,13 @@ function updateTourGuideFacing() {
   }
 
   var playerTile = level.two.map.getTileWorldXY(player.x, player.y);
-  var playerOnTourGuide = PIXI.Point.equals(tourGuide.tilePos, new PIXI.Point(playerTile.x, playerTile.y));
+  var playerOnTourGuide = Phaser.Point.equals(tourGuide.tilePos, new Phaser.Point(playerTile.x, playerTile.y));
 
   if (!playerOnTourGuide) {
     return;
   }
 
-  tourGuide.facing = PLAYER.getFacing();
+  TOURIST.setTourGuideFacing(tourGuide, level.two.map, PLAYER.getFacing());
 }
 
 
