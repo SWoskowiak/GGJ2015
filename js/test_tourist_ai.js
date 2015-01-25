@@ -62,42 +62,4 @@ function update() {
 
   // var moving = false;
 
-  if (GLOB.cursors.up.isDown) {
-    GLOB.tourGuide.facing = DIR.UP;
-  }
-
-  if (GLOB.cursors.down.isDown) {
-    GLOB.tourGuide.facing = DIR.DOWN;
-  }
-
-  if (GLOB.cursors.left.isDown) {
-    GLOB.tourGuide.facing = DIR.LEFT;
-  }
-
-  if (GLOB.cursors.right.isDown) {
-    GLOB.tourGuide.facing = DIR.RIGHT;
-  }
-
-  var i, tourist;
-  if (GLOB.oKey.justUp) {
-    for (i = 0; i < GLOB.tourists.length; i++) {
-      tourist = GLOB.tourists[i];
-      // if step returns false, it means he couldn't move, so
-      // don't keep trying to move
-      if (!TOURIST.stepForward(game, GLOB.map, tourist)) {
-        break;
-      }
-    }
-    GLOB.tourists.forEach(function (tourist) {
-    });
-  } else if (GLOB.iKey.justUp) {
-    for (i = GLOB.tourists.length - 1; i >= 0; i--) {
-      tourist = GLOB.tourists[i];
-      // if step returns false, it means he couldn't move, so
-      // don't keep trying to move
-      if (!TOURIST.stepBackward(game, GLOB.map, tourist)) {
-        break;
-      }
-    }
-  }
 }

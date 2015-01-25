@@ -6,6 +6,10 @@ LEVELS = (function () {
       one: {
         map : game.add.tilemap('map1'),
         layers : {}
+      },
+      two: {
+        map: game.add.tilemap('map2'),
+        layers: {}
       }
     };
 
@@ -18,9 +22,14 @@ LEVELS = (function () {
     level.one.layers.collision = level.one.map.createLayer('collision');
     level.one.layers.misc = level.one.map.createLayer('misc');
 
-    console.log(level.one.layers.misc);
+    // Level 2 setup
+    level.two.map.addTilesetImage('logic_tiles', 'logic_tiles');
+    console.log('poo2');
+    level.two.layers.logical = level.two.map.createLayer('logical');
+
+    // console.log(level.one.layers.misc);
     // Resize our world to level one initially
-    level.one.layers.terrain.resizeWorld();
+    // level.one.layers.terrain.resizeWorld();
 
     return level;
   }
@@ -36,13 +45,40 @@ DIR = {
   UP: 'up',
   DOWN: 'down',
   LEFT: 'left',
-  RIGHT: 'right'
+  RIGHT: 'right',
+
+  toOffset: function (direction) {
+    var x = 0;
+    var y = 0;
+
+    switch (direction) {
+    case DIR.UP:
+      y = -1;
+      break;
+
+    case DIR.DOWN:
+      y = 1;
+      break;
+
+    case DIR.LEFT:
+      x = -1;
+      break;
+
+    case DIR.RIGHT:
+      x = 1;
+      break;
+    }
+
+    return new PIXI.Point(x, y);
+  }
 };
 
 
 TILE_PROPS = {
   GUARD_PASSABLE: 'guard_passable',
-  TOURIST_PASSABLE: 'tourist_passable'
+  TOURIST_PASSABLE: 'tourist_passable',
+  TOURIST_SPAWN: 'tourist_spawn',
+  TOURGUIDE_SPAWN: 'tourguide_spawn'
 };
 
 

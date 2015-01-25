@@ -1,32 +1,59 @@
+
+
 TOURIST = (function () {
   'use strict';
 
+  function buildChainFromLevel(game, level) {
+    var touristPositions = [];
 
-  function buildChain(game, positions, options) {
+    // BEGIN Extract spawn positions from logical layer of tilemap
+    var logicalLayer = level.map.layers[level.map.getLayer('logical')];
+    var spawnString = logicalLayer.properties.spawns;
+    // '1 4 , 1 3, 111       22222  '.split(',')[2].trim().split(' ')
+    var coordPairs = spawnString.split(',');
+
+    function extractPosFromCoordPair(s) {
+      var splitPair = s.trim().split(/\W/);
+      return new PIXI.Point(Number(splitPair[0]), Number(splitPair[splitPair.length - 1]));
+    }
+
+    var guidePosStr = coordPairs.shift();
+    var guidePos = extractPosFromCoordPair(guidePosStr);
+    touristPositions.push(guidePos);
+
+    var i;
+    for (i = 0; i < coordPairs.length; i++) {
+      var posStr = coordPairs[i].trim();
+      var pos = extractPosFromCoordPair(posStr);
+      touristPositions.push(pos);
+    }
+    // END Extract spawn positions
+
+    return buildChain(game, level.map, touristPositions);
+  }
+
+
+  function buildChain(game, map, positions) {
     var touristList = [];
 
     for (var i = 0; i < positions.length; i++) {
       var tilePos = positions[i];
       var nextTourist = i > 0 ? touristList[i - 1] : null;
-      var tourist = TOURIST.build(game, nextTourist);
+      var tourist = TOURIST.build(game, map, nextTourist);
       tourist.facing = DIR.RIGHT;
       tourist.tilePos.set(positions[i].x, positions[i].y);
       touristList.push(tourist);
-
-      if (options && 'group' in options) {
-        options.group.add(tourist.sprite);
-      }
     }
 
     return touristList;
   }
 
 
-  function build(game, nextTourist) {
-    var sprite = game.add.sprite(0, 0, 'tourist');
+  function build(game, map, nextTourist) {
+    var sprite = game.add.sprite(0, 0, 'guard_sprite');
     var tilePos = new PIXI.Point(0, 0);
 
-    return {
+    var tourist = {
       sprite: sprite,
       facing: DIR.RIGHT,
       tilePos: tilePos,
@@ -36,6 +63,10 @@ TOURIST = (function () {
       passableFlag: TILE_PROPS.TOURIST_PASSABLE,
       backingUp: false
     };
+
+    updateSpriteCoords(map, tourist);
+
+    return tourist;
   }
 
 
@@ -75,32 +106,6 @@ TOURIST = (function () {
       facing: tourist.facing
     });
     tourist.tilePos.set(newTileX, newTileY);
-  }
-
-
-  function tileDirOffset(direction) {
-    var x = 0;
-    var y = 0;
-
-    switch (direction) {
-    case DIR.UP:
-      y = -1;
-      break;
-
-    case DIR.DOWN:
-      y = 1;
-      break;
-
-    case DIR.LEFT:
-      x = -1;
-      break;
-
-    case DIR.RIGHT:
-      x = 1;
-      break;
-    }
-
-    return new PIXI.Point(x, y);
   }
 
 
@@ -144,7 +149,7 @@ TOURIST = (function () {
 
   function move(map, tourist, direction) {
     var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
-    var nextTilePos = tileDirOffset(direction);
+    var nextTilePos = DIR.toOffset(direction);
 
     nextTilePos.x += tourist.tilePos.x;
     nextTilePos.y += tourist.tilePos.y;
@@ -183,6 +188,7 @@ TOURIST = (function () {
     stepBackward: stepBackward,
     move: move,
     updateSpriteCoords: updateSpriteCoords,
-    buildChain: buildChain
+    buildChain: buildChain,
+    buildChainFromLevel: buildChainFromLevel
   };
 })();
