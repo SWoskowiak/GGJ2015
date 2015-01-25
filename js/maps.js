@@ -69,6 +69,25 @@ DIR = {
     }
 
     return new Phaser.Point(x, y);
+  },
+
+  oppositeOf: function (direction) {
+    switch (direction) {
+    case DIR.UP:
+      return DIR.DOWN;
+
+    case DIR.DOWN:
+      return DIR.UP;
+
+    case DIR.LEFT:
+      return DIR.RIGHT;
+
+    case DIR.RIGHT:
+      return DIR.LEFT;
+
+    default:
+      throw new Error('BAD DIRECTION', direction);
+    }
   }
 };
 

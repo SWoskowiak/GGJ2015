@@ -207,7 +207,9 @@ TOURIST = (function () {
     tourist.sprite.animations.play(tourist.facing); // play the direction we are moving in
     tourist.tween = game.add.tween(tourist.sprite); // new player tween
 
-    switch (tourist.facing) {
+    var dir = goingBackward ? DIR.oppositeOf(tourist.facing) : tourist.facing;
+
+    switch (dir) {
     case DIR.LEFT:
       tourist.tween.to({x: tourist.sprite.x - 64}, 300);
       break;
