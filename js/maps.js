@@ -189,8 +189,16 @@ MAPINFO = (function () {
     var doodadsIdx = map.getLayer('doodads');
     var doodadsTile = map.getTile(x, y, doodadsIdx);
 
-    if (doodadsTile && (TILE_PROPS.BLOCK_TOURIST in doodadsTile.properties)) {
-      return false;
+    if (doodadsTile) {
+      if (TILE_PROPS.BLOCK_TOURIST in doodadsTile.properties) {
+        return false;
+      }
+
+      var tprops = tilePropsFromTile(doodadsTile);
+      if (tprops.doodadBlock) {
+        return false;
+      }
+
     }
 
     return true;
