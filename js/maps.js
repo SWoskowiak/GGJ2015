@@ -130,8 +130,16 @@ MAPINFO = (function () {
     var doodadsIdx = map.getLayer('doodads');
     var doodadsTile = map.getTile(x, y, doodadsIdx);
 
-    if (doodadsTile && TILE_PROPS.BREAKABLE in doodadsTile.properties) {
-      return false;
+    if (doodadsTile) {
+      var tileWorldProps = tilePropsFromTile(doodadsTile);
+
+      if (tileWorldProps.doodadBlock) {
+        return false;
+      }
+
+      if (tileWorldProps.breakable) {
+        return false;
+      }
     }
 
     return true;
@@ -209,11 +217,23 @@ MAPINFO = (function () {
   }
 
 
-  // function removeDoor(map, x, y) {
-  //   var doodadsIdx = map.getLayer('doodads');
-  //   var doodadsTile = map.getTile(x, y, doodadsIdx);
-    
-  // }
+  function removeDoor(map, x, y) {
+    var doodadsIdx = map.getLayer('doodads');
+    var doorTile = map.getTile(x, y, doodadsIdx);
+
+    if (!doorTile) {
+      return false;
+    }
+
+    var explosion = window.game.add.sprite(doorTile.worldX, doorTile.worldY, 'explosion');
+    var exAnim = explosion.animations.add('explode', [0,1,2,3,4,5], 20);
+    exAnim.killOnComplete = true;
+    exAnim.play();
+    //explosion.animations.play('explode');
+    map.removeTile(x, y, doodadsIdx);
+
+    return true;
+  }
 
 
   function getTourist(map, x, y) {
@@ -238,12 +258,24 @@ MAPINFO = (function () {
       tile.tileWorldProps = {
         occupyingTourist: null,
         leverOpensDoor: null,
-        breakable: false
+        breakable: false,
+        doodadBlock: false,
       };
     }
     return tile.tileWorldProps;
   }
 
+  /*
+var tileProps = MAPINFO.tileProps(map, breakableX, breakableY);
+tileProps.breakable = true;
+
+var tileProps = MAPINFO.tileProps(map, leverX, leverY);
+tileProps.leverOpensDoor = new Phaser.Point(doorX, doorY);
+   */
+
+  var _private = {
+    removeDoor: removeDoor
+  };
 
   return {
     guardPassable: guardPassable,
@@ -253,6 +285,7 @@ MAPINFO = (function () {
     tileProps: tileProps,
     tilePropsFromTile: tilePropsFromTile,
     getLayerData: getLayerData,
-    tryRemoveBreakable: tryRemoveBreakable
+    tryRemoveBreakable: tryRemoveBreakable,
+    _private: _private,
   };
 })();
