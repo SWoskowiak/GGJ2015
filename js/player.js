@@ -65,6 +65,11 @@ var PLAYER = (function () {
   }
 
 
+  function getTilePos() {
+    return new Phaser.Point(tileX, tileY);
+  }
+
+
   function isPointing() {
     return pointing;
   }
@@ -223,6 +228,7 @@ var PLAYER = (function () {
     isPointing: isPointing,
     getFacing: getFacing,
     build: build,
-    update: update
+    update: update,
+    getTilePos: getTilePos
   };
 })();

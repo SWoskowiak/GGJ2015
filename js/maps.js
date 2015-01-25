@@ -315,6 +315,7 @@ tileProps.leverOpensDoor = new Phaser.Point(doorX, doorY);
     tilePropsFromTile: tilePropsFromTile,
     getLayerData: getLayerData,
     tryRemoveBreakable: tryRemoveBreakable,
-    _private: _private,
+    tryPullLever: tryPullLever,
+    _private: _private
   };
 })();

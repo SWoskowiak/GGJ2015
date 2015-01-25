@@ -104,6 +104,12 @@ function updateTourGuideFacing() {
 function update() {
   PLAYER.update(game, level);
   updateTourGuideFacing();
+
+  if (PLAYER.isPointing()) {
+    var playerTilePos = PLAYER.getTilePos();
+    MAPINFO.tryPullLever(level.current.map, playerTilePos.x, playerTilePos.y);
+  }
+
   TOURIST.updateTourists(touristList, level.current, PLAYER.isSayingGo(), oKey, iKey);
 }
 
