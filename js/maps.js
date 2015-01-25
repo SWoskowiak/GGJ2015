@@ -111,7 +111,6 @@ MAPINFO = (function () {
     return tilePropsFromTile(tile);
   }
 
-
   function tilePropsFromTile(tile) {
     if (!('tileWorldProps' in tile)) {
       tile.tileWorldProps = {
