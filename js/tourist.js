@@ -241,7 +241,7 @@ TOURIST = (function () {
     // Play the tween
     tourist.tween.start();
 
-    // TOURIST.updateSpriteCoords(level.two.map, tourist);
+    // TOURIST.updateSpriteCoords(level.current.map, tourist);
   }
 
 

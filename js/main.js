@@ -4,9 +4,11 @@ function preload() {
   // Load the tilemap json
   game.load.tilemap('map1', 'maps/map1.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.tilemap('map2', 'maps/map2.json', null, Phaser.Tilemap.TILED_JSON);
+  game.load.tilemap('map3', 'maps/map3.json', null, Phaser.Tilemap.TILED_JSON);
   // Load the tiles png itself
   game.load.image('tiles', 'assets/tiles.png');
   game.load.image('logic_tiles', 'assets/logic_tiles.png');
+  game.load.image('tileset', 'assets/tileset.png');
 
   // Speech bubbles
   game.load.image('go_bubble', 'assets/go.png');
@@ -44,12 +46,14 @@ function create() {
   game.time.desiredFps = 60;
   // Will give you the level object which contains level.one, level.two etc.
   level = LEVELS.build(game);
+  level.current = level.three;
+  level.current.layers.logical.resizeWorld();
   // Gives you the cursor key controls
   game.GLOBALS.cursors = game.input.keyboard.createCursorKeys();
   game.GLOBALS.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   game.GLOBALS.mKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
-  touristList = TOURIST.buildChainFromLevel(game, level.two);
+  touristList = TOURIST.buildChainFromLevel(game, level.current);
   oKey = game.input.keyboard.addKey(Phaser.Keyboard.O);
   iKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
 
@@ -71,15 +75,15 @@ function updateTourGuideFacing() {
   if (!PLAYER.isPointing()) {
     return;
   }
-  var target = level.two.map.getTile(player.tileX, player.tileY);
-  var playerTile = level.two.map.getTileWorldXY(target.worldX, target.worldY);
+  var target = level.current.map.getTile(player.tileX, player.tileY);
+  var playerTile = level.current.map.getTileWorldXY(target.worldX, target.worldY);
   var playerOnTourGuide = Phaser.Point.equals(tourGuide.tilePos, new Phaser.Point(playerTile.x, playerTile.y));
 
   if (!playerOnTourGuide) {
     return;
   }
 
-  TOURIST.setTourGuideFacing(tourGuide, level.two.map, PLAYER.getFacing());
+  TOURIST.setTourGuideFacing(tourGuide, level.current.map, PLAYER.getFacing());
 }
 
 
@@ -87,7 +91,7 @@ function updateTourGuideFacing() {
 function update() {
   PLAYER.update(game, level);
   updateTourGuideFacing();
-  TOURIST.updateTourists(touristList, level.two, PLAYER.isSayingGo(), oKey, iKey);
+  TOURIST.updateTourists(touristList, level.current, PLAYER.isSayingGo(), oKey, iKey);
 }
 
 // function render() {

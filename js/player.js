@@ -25,7 +25,7 @@ var PLAYER = (function () {
     tileX = playerPos.x;
     tileY = playerPos.y;
     // Set players position in the world
-    var startCoords = level.two.map.getTile(playerPos.x, playerPos.y);
+    var startCoords = level.current.map.getTile(playerPos.x, playerPos.y);
     player = game.add.sprite(startCoords.worldX, startCoords.worldY, 'guard_sprite');
 
     game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -161,16 +161,16 @@ var PLAYER = (function () {
   function canMove(dir, level) {
     switch(dir) {
       case DIR.LEFT:
-        return MAPINFO.guardPassable(level.two.map, tileX - 1, tileY);
+        return MAPINFO.guardPassable(level.current.map, tileX - 1, tileY);
 
       case DIR.RIGHT:
-        return MAPINFO.guardPassable(level.two.map, tileX + 1, tileY);
+        return MAPINFO.guardPassable(level.current.map, tileX + 1, tileY);
 
       case DIR.UP:
-        return MAPINFO.guardPassable(level.two.map, tileX, tileY - 1);
+        return MAPINFO.guardPassable(level.current.map, tileX, tileY - 1);
 
       case DIR.DOWN:
-        return MAPINFO.guardPassable(level.two.map, tileX, tileY + 1);
+        return MAPINFO.guardPassable(level.current.map, tileX, tileY + 1);
 
       default:
         return false;
@@ -205,8 +205,8 @@ var PLAYER = (function () {
       }
 
       var offset = 0;
-      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 8;
-      var target = level.two.map.getTile(tileX, tileY);
+      if (MAPINFO.getTourist(level.current.map, tileX, tileY)) offset = 8;
+      var target = level.current.map.getTile(tileX, tileY);
       console.log(offset);
       // Tween to tile
       tween.to({x: target.worldX - offset, y: target.worldY + offset}, 300);

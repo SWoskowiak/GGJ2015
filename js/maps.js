@@ -10,7 +10,12 @@ LEVELS = (function () {
       two: {
         map: game.add.tilemap('map2'),
         layers: {}
-      }
+      },
+      three: {
+        map: game.add.tilemap('map3'),
+        layers: {}
+      },
+      current: null
     };
 
     // Set the game stage background color
@@ -26,9 +31,9 @@ LEVELS = (function () {
     level.two.map.addTilesetImage('logic_tiles', 'logic_tiles');
     level.two.layers.logical = level.two.map.createLayer('logical');
 
-    // console.log(level.one.layers.misc);
-    // Resize our world to level one initially
-    level.two.layers.logical.resizeWorld();
+    // Level 3 setup
+    level.three.map.addTilesetImage('tileset', 'tileset');
+    level.three.layers.logical = level.three.map.createLayer('logical');
 
     return level;
   }
