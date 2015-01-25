@@ -1,4 +1,6 @@
 var game = new Phaser.Game(1024, 768, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+//fuck the world
+window.game = game;
 
 function preload() {
   // Load the tilemap json
@@ -11,6 +13,9 @@ function preload() {
   game.load.image('tileset', 'assets/tileset.png');
   game.load.image('tileset1', 'assets/tileset1.png');
   game.load.image('tileset2', 'assets/tileset2.png');
+
+  // EXPLOSIONS WE NEED MORE EPXLOSIONS
+  game.load.spritesheet('explosion', 'assets/explosion.png', 64, 64, 6);
 
   // Speech bubbles
   game.load.image('go_bubble', 'assets/go.png');
