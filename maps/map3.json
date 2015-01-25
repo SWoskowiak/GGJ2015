@@ -18,6 +18,7 @@
          "opacity":1,
          "properties":
             {
+             "goal":"0 7",
              "player_spawn":"1 15 down",
              "tourist_spawns":"7 13 down, 7 12 down, 6 12 right, 5 12 right, 5 11 down, 6 11 left"
             },
@@ -94,6 +95,33 @@
             },
          "spacing":0,
          "tileheight":64,
+         "tileproperties":
+            {
+             "38":
+                {
+                 "block_tourist":""
+                },
+             "39":
+                {
+                 "block_tourist":""
+                },
+             "54":
+                {
+                 "block_tourist":""
+                },
+             "55":
+                {
+                 "block_tourist":""
+                },
+             "70":
+                {
+                 "block_tourist":""
+                },
+             "71":
+                {
+                 "block_tourist":""
+                }
+            },
          "tilewidth":64
         }],
  "tilewidth":64,
