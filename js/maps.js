@@ -125,6 +125,7 @@ MAPINFO = (function () {
   return {
     guardPassable: guardPassable,
     getTourist: getTourist,
+    setTourist: setTourist,
     tileProps: tileProps,
     tilePropsFromTile: tilePropsFromTile
   };

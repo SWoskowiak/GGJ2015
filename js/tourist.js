@@ -81,8 +81,7 @@ TOURIST = (function () {
       lastUpdateTime: 0.0,
       nextTourist: nextTourist || null,
       moveHistory: [],
-      passableFlag: TILE_PROPS.TOURIST_PASSABLE,
-      backingUp: false
+      passableFlag: TILE_PROPS.TOURIST_PASSABLE
     };
 
     // updateSpriteCoords(map, tourist);
@@ -161,15 +160,17 @@ TOURIST = (function () {
 
   function backupMove(map, tourist) {
     // must be called in reverse-chain order
+    // curTileProps.occupyingTourist = null;
+    MAPINFO.setTourist(map, tourist.tilePos.x, tourist.tilePos.y, null);
     var curTileProps = MAPINFO.tileProps(map, tourist.tilePos.x, tourist.tilePos.y);
-    curTileProps.occupyingTourist = null;
 
     var prevMove = tourist.moveHistory.pop();
     tourist.tilePos.set(prevMove.tilePos.x, prevMove.tilePos.y);
     tourist.facing = prevMove.facing;
 
-    var nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
-    MAPINFO.tileProps(map, prevMove.tilePos.x, prevMove.tilePos.y).occupyingTourist = tourist;
+    MAPINFO.setTourist(map, prevMove.tilePos.x, prevMove.tilePos.y, tourist);
+    var nextTileProps = MAPINFO.tileProps(map, prevMove.tilePos.x, prevMove.tilePos.y);
+    console.log('poo');
   }
 
 
