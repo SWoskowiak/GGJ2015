@@ -65,13 +65,18 @@ TOURIST = (function () {
     }
 
     tourGuide.facing = direction;
+    tourGuide.sprite.animations.stop(direction, true);
   }
 
 
   function build(game, map, nextTourist) {
-    var sprite = game.add.sprite(0, 0, 'guard_sprite');
+    var sprite = game.add.sprite(0, 0, 'tourist_' + Math.floor(Math.random() * 4));
     var tilePos = new Phaser.Point(0, 0);
 
+    sprite.animations.add(DIR.RIGHT, [3, 4, 5], 20, true);
+    sprite.animations.add(DIR.LEFT, [6, 7, 8], 20, true);
+    sprite.animations.add(DIR.UP, [9, 10, 11], 20, true);
+    sprite.animations.add(DIR.DOWN, [0, 1, 2], 20, true);
     var tourist = {
       sprite: sprite,
       facing: DIR.RIGHT,
@@ -229,6 +234,7 @@ TOURIST = (function () {
 
     // What we do when we are done moving
     tourist.tween.onComplete.add(function () {
+      tourist.sprite.animations.stop(null, true);
       tourist.moving = false;
     });
 
