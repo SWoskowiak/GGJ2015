@@ -161,10 +161,30 @@ MAPINFO = (function () {
   }
 
 
+  function tryPullLever(map, x, y) {
+    var doodadsIdx = map.getLayer('doodads');
+    var doodadsTile = map.getTile(x, y, doodadsIdx);
+
+    if (doodadsTile) {
+      var props = tilePropsFromTile(doodadsTile);
+      if (props.leverOpensDoor !== null) {
+        var doorCoord = props.leverOpensDoor;
+        removeDoor(map, doorCoord.x, doorCoord.y);
+      }
+    }
+  }
+
+
   function getBreakable(map, x, y) {
     var doodadsIdx = map.getLayer('doodads');
     var doodadsTile = map.getTile(x, y, doodadsIdx);
-    if (doodadsTile && (TILE_PROPS.BREAKABLE in doodadsTile.properties)) {
+    if (!doodadsTile) {
+      return null;
+    }
+
+    var tileWorldProps = tilePropsFromTile(doodadsTile);
+
+    if (tileWorldProps.breakable) {
       return doodadsTile;
     }
     return null;
@@ -175,6 +195,7 @@ MAPINFO = (function () {
     var doodadsIdx = map.getLayer('doodads');
 
     var breakableTile = getBreakable(map, x, y);
+
     if (breakableTile) {
       map.removeTile(x, y, doodadsIdx);
       return true;
@@ -182,6 +203,13 @@ MAPINFO = (function () {
 
     return false;
   }
+
+
+  // function removeDoor(map, x, y) {
+  //   var doodadsIdx = map.getLayer('doodads');
+  //   var doodadsTile = map.getTile(x, y, doodadsIdx);
+    
+  // }
 
 
   function getTourist(map, x, y) {
@@ -204,7 +232,9 @@ MAPINFO = (function () {
   function tilePropsFromTile(tile) {
     if (!('tileWorldProps' in tile)) {
       tile.tileWorldProps = {
-        occupyingTourist: null
+        occupyingTourist: null,
+        leverOpensDoor: null,
+        breakable: false
       };
     }
     return tile.tileWorldProps;
