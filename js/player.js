@@ -5,7 +5,7 @@ var PLAYER = (function () {
     facing = 'down',
     acting = false,
     showMove = false,
-    movespeed = 200;
+    movespeed = 50;
 
   var speechBubbles = {
     stop: '',
@@ -15,8 +15,8 @@ var PLAYER = (function () {
   var lightRadius = 150,
     shadowTexture,
     lightOffset = {
-      x : 50,
-      y : 50
+      x : 30,
+      y : 30
     },
     lightTexture
 
@@ -26,7 +26,7 @@ var PLAYER = (function () {
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.collideWorldBounds = true;
-    player.body.setSize(64, 64, 43, 32);
+    player.body.setSize(64, 64, 21, 16);
 
     // Movement animations
     player.animations.add('right', [3, 4, 5], 20, true);
@@ -159,13 +159,13 @@ var PLAYER = (function () {
       player.animations.play(dir); // play the direction we are moving in
       tween = game.add.tween(player); // new player tween
       if (dir === 'left') {
-        tween.to({x: player.x - 64}, 150);
+        tween.to({x: player.x - 64}, 300);
       } else if (dir === 'right') {
-        tween.to({x: player.x + 64}, 150);
+        tween.to({x: player.x + 64}, 300);
       } else if (dir === 'down') {
-        tween.to({y: player.y + 64}, 150);
+        tween.to({y: player.y + 64}, 300);
       } else if (dir === 'up') {
-        tween.to({y: player.y - 64}, 150);
+        tween.to({y: player.y - 64}, 300);
       }
       // What we do when we are done moving
       tween.onComplete.add(function () {doneMoving(dir);});

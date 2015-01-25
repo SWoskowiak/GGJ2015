@@ -9,7 +9,7 @@ function preload() {
   game.load.image('go_bubble', 'assets/go.png');
   game.load.image('stop_bubble', 'assets/stop.png');
   // Load the guard sprite
-  game.load.spritesheet('guard_sprite', 'assets/guard.png', 128, 128, 17);
+  game.load.spritesheet('guard_sprite', 'assets/guard64x64.png', 64, 64, 17);
   // Credit to HorrorPen on open game art
   game.load.audio('music', ['assets/music.mp3', 'assets/music.ogg']);
   // Bitmap fonts courtesy of spicy pixel of open game art
@@ -47,7 +47,7 @@ function create() {
 
   // ~*Music*~
   var music = game.add.audio('music');
-  music.volume = 0.2;
+  music.volume = 0.1;
   music.loop = true;
   //music.play();
 }
