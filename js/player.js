@@ -205,9 +205,8 @@ var PLAYER = (function () {
       }
 
       var offset = 0;
-      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 8;
+      if (MAPINFO.getTourist(level.two.map, tileX, tileY)) offset = 4;
       var target = level.two.map.getTile(tileX, tileY);
-      console.log(offset);
       // Tween to tile
       tween.to({x: target.worldX - offset, y: target.worldY + offset}, 300);
       // What we do when we are done moving
