@@ -35,10 +35,6 @@
          "tileheight":32,
          "tileproperties":
             {
-             "0":
-                {
-                 "tourist_passable":""
-                },
              "1":
                 {
                  "guard_passable":"",

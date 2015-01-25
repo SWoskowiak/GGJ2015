@@ -23,8 +23,8 @@ function preload() {
   game.load.image('tiles', 'assets/tiles.png');
   game.load.image('logic_tileset', 'assets/logic_tileset.png');
 
-  game.load.spritesheet('guard_sprite', 'assets/guard_sprites.png', 128, 128);
-  game.load.spritesheet('tourist_sprite', 'assets/tourist_sprites.png', 128, 128);
+  game.load.spritesheet('guard', 'assets/guard.png', 128, 128);
+  game.load.spritesheet('tourist', 'assets/tourist.png', 128, 128);
 }
 
 DIR = {
@@ -41,11 +41,18 @@ TILE_PROPS = {
 
 tilemapInfo = [];
 
+
+
+  function subPt(pointA, pointB) {
+    return new PIXI.Point(pointA.x - pointB.x,
+                          pointA.y - pointB.y);
+  }
+
 TOURIST = (function () {
 
   function build(game, nextTourist) {
 
-    var sprite = game.add.sprite(0, 0, 'guard_sprite');
+    var sprite = game.add.sprite(0, 0, 'guard');
     sprite.animations.add('walk_up', [9, 10, 11], 15, true);
     sprite.animations.add('walk_down', [0, 1, 2], 15, true);
     sprite.animations.add('walk_left', [6, 7, 8], 15, true);
@@ -67,22 +74,35 @@ TOURIST = (function () {
       tilePos: tilePos,
       lastUpdateTime: 0.0,
       nextTourist: nextTourist,
-      tilePosHistory: [],
-      passableFlag: TILE_PROPS.TOURIST_PASSABLE
+      moveHistory: [],
+      passableFlag: TILE_PROPS.TOURIST_PASSABLE,
     };
   }
 
-  function update(game, tourist) {
-    if (game.time.totalElapsedSeconds() - tourist.lastUpdateTime >= 1.0) {
-      tourist.lastUpdateTime = game.time.totalElapsedSeconds();
-      move(map, tourist, tourist.facing);
+  function step(game, tourist) {
+    // if (game.time.totalElapsedSeconds() - tourist.lastUpdateTime >= 1.0) {
+      // tourist.lastUpdateTime = game.time.totalElapsedSeconds();
+
+    if (tourist.nextTourist !== null && tourist.nextTourist.moveHistory.length > 1) {
+      var prevMoveIndex_A = tourist.nextTourist.moveHistory.length - 1;
+      var prevMoveIndex_B = tourist.nextTourist.moveHistory.length - 2;
+      var nextTouristPrevMove_A = tourist.nextTourist.moveHistory[prevMoveIndex_A];
+      var nextTouristPrevMove_B = tourist.nextTourist.moveHistory[prevMoveIndex_B];
+      // var posDiff = subPt(tourist.nextTourist.tilePos, nextTouristPrevMove.tilePos);
+      // newFacing = directionFromPointVector(posDiff);
+      // tourist.facing = newFacing;
+      tourist.facing = nextTouristPrevMove_B.facing;
     }
+    move(map, tourist, tourist.facing);
 
     updateSpriteCoords(map, tourist);
   }
 
-  function setTilePos(tourist, newTileX, newTileY) {
-    tourist.tilePosHistory.push(tourist.tilePos.clone());
+  function setTilePos(tourist, newTileX, newTileY, addToHistory) {
+    tourist.moveHistory.push({
+      tilePos: tourist.tilePos.clone(),
+      facing: tourist.facing
+    });
     tourist.tilePos.set(newTileX, newTileY);
   }
 
@@ -90,7 +110,7 @@ TOURIST = (function () {
     var x = 0;
     var y = 0;
 
-    switch (tourGuide.facing) {
+    switch (direction) {
     case DIR.UP:
       y = -1;
       break;
@@ -111,6 +131,28 @@ TOURIST = (function () {
     return new PIXI.Point(x, y);
   }
 
+  function directionFromPointVector(pointVector) {
+    if ((pointVector.x !== 0 && pointVector.y !== 0) ||
+        (pointVector.x === pointVector.y)) {
+      console.error('invalid cardinal direction point vector', pointVector);
+    }
+
+    if (pointVector.x > 0) {
+      return DIR.RIGHT;
+    }
+    if (pointVector.x < 0) {
+      return DIR.LEFT;
+    }
+    if (pointVector.y > 0) {
+      return DIR.DOWN;
+    }
+    if (pointVector.y < 0) {
+      return DIR.UP;
+    }
+
+    return null;
+  }
+
   function tileProps(tile) {
     if (!('gameProps' in tile)) {
       tile.gameProps = {
@@ -120,12 +162,28 @@ TOURIST = (function () {
     return tile.gameProps;
   }
 
-  function move(map, tourGuide, direction) {
-    var currentTile = map.getTile(tourGuide.tilePos.x, tourGuide.tilePos.y, 0);
+  function backupMove(map, tourist) {
+    // must be called in reverse-chain order
+    prevMove = tourist.moveHistory.pop();
+    tourist.tilePos.set(prevMove.tilePos.x, prevMove.tilePos.y);
+    tourist.facing = prevMove.facing;
+
+    var curTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y);
+
+    curTileProps = tileProps(curTile);
+    curTileProps.hasTourist = false;
+
+    nextTile = map.getTile(prevMove.tilePos.x, prevMove.tilePos.y);
+    tileProps(nextTile).hasTourist = true;
+  }
+
+
+  function move(map, tourist, direction) {
+    var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
     var nextTilePos = tileDirOffset(direction);
 
-    nextTilePos.x += tourGuide.tilePos.x;
-    nextTilePos.y += tourGuide.tilePos.y;
+    nextTilePos.x += tourist.tilePos.x;
+    nextTilePos.y += tourist.tilePos.y;
 
     var nextTile = map.getTile(nextTilePos.x, nextTilePos.y);
 
@@ -136,32 +194,31 @@ TOURIST = (function () {
       return false;
     }
 
-    if (!(tourGuide.passableFlag in nextTile.properties)) {
+    if (!(tourist.passableFlag in nextTile.properties)) {
       return false;
     }
 
     nextTileProps.hasTourist = true;
     currentTileProps.hasTourist = false;
 
-    if ('gamedata' in currentTile) {
-      arrayRemove(occupants, tourGuide);
-      nextTile.push(tourGuide);
-    }
-    setTilePos(tourGuide, nextTilePos.x, nextTilePos.y);
+    setTilePos(tourist, nextTilePos.x, nextTilePos.y);
 
     return true;
   }
 
-  function updateSpriteCoords(map, tourGuide) {
-    var currentTile = map.getTile(tourGuide.tilePos.x, tourGuide.tilePos.y, 0);
-    tourGuide.sprite.x = currentTile.worldX;
-    tourGuide.sprite.y = currentTile.worldY;
+
+  function updateSpriteCoords(map, tourist) {
+    var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
+    tourist.sprite.x = currentTile.worldX;
+    tourist.sprite.y = currentTile.worldY;
   }
+
 
   return {
     build: build,
-    update: update,
-    move: move
+    step: step,
+    move: move,
+    updateSpriteCoords: updateSpriteCoords
   };
 })();
 
@@ -170,7 +227,9 @@ var cursors;
 var tourGuide;
 var tourists;
 var map;
-var terrain;
+
+var oKey;
+var iKey;
 
 
 function buildTouristChain(game) {
@@ -185,8 +244,9 @@ function buildTouristChain(game) {
 
   for (var i = 0; i < touristPositions.length; i++) {
     var tilePos = touristPositions[i];
-    var nextTourist = i > 0 ? null : touristPositions[i - 1];
+    var nextTourist = i > 0 ? touristList[i - 1] : null;
     var tourist = TOURIST.build(game, nextTourist);
+    tourist.facing = DIR.RIGHT;
     tourist.tilePos.set(touristPositions[i].x, touristPositions[i].y);
     touristList.push(tourist);
   }
@@ -203,7 +263,7 @@ function create() {
   map = game.add.tilemap('tourist_test_map');
   map.addTilesetImage('LogicTiles', 'logic_tileset');
   map.addTilesetImage('tiles', 'tiles');
-  terrain = map.createLayer('terrain');
+  var terrain = map.createLayer('terrain');
   terrain.resizeWorld();
 
   //  This resizes the game world to match the layer dimensions
@@ -214,7 +274,14 @@ function create() {
   // tourGuide = TOURIST.build(game);
   tourists = buildTouristChain(game);
 
+  oKey = game.input.keyboard.addKey(Phaser.Keyboard.O);
+  iKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
+
   tourGuide = tourists[0];
+
+  tourists.forEach(function (tourist) {
+    TOURIST.updateSpriteCoords(map, tourist);
+  });
 }
 
 function update() {
@@ -238,7 +305,13 @@ function update() {
     tourGuide.facing = DIR.RIGHT;
   }
 
-  tourists.forEach(function (tourist) {
-    TOURIST.update(game, tourist);
-  });
+  if (oKey.justUp) {
+    tourists.forEach(function (tourist) {
+      TOURIST.step(game, tourist);
+    });
+  } else if (iKey.justUp) {
+    tourists.forEach(function (tourist) {
+      TOURIST.step(game, tourist);
+    });
+  }
 }
