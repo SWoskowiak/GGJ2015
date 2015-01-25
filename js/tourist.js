@@ -192,13 +192,21 @@ TOURIST = (function () {
     var nextTileProps = MAPINFO.tilePropsFromTile(nextTile);
     var currentTileProps = MAPINFO.tilePropsFromTile(currentTile);
 
-    if (nextTileProps.occupyingTourist !== null) {
+    // if (nextTileProps.occupyingTourist !== null) {
+      // return false;
+    // }
+
+    if (MAPINFO.getTourist(map, nextTilePos.x, nextTilePos.y)) {
       return false;
     }
 
-    if (!(tourist.passableFlag in nextTile.properties)) {
+    if (MAPINFO.touristPassable(map, nextTilePos.x, nextTilePos.y)) {
       return false;
     }
+
+    // if (!(tourist.passableFlag in nextTile.properties)) {
+      // return false;
+    // }
 
     nextTileProps.occupyingTourist = tourist;
     currentTileProps.occupyingTourist = null;

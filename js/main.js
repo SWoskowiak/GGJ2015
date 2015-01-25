@@ -9,6 +9,8 @@ function preload() {
   game.load.image('tiles', 'assets/tiles.png');
   game.load.image('logic_tiles', 'assets/logic_tiles.png');
   game.load.image('tileset', 'assets/tileset.png');
+  game.load.image('tileset1', 'assets/tileset1.png');
+  game.load.image('tileset2', 'assets/tileset2.png');
 
   // Speech bubbles
   game.load.image('go_bubble', 'assets/go.png');
