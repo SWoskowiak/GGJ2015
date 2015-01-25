@@ -13,6 +13,12 @@ function preload() {
   game.load.image('stop_bubble', 'assets/stop.png');
   // Load the guard sprite
   game.load.spritesheet('guard_sprite', 'assets/guard64x64.png', 64, 64, 17);
+
+  for (var i = 0; i < 4; i++) {
+    var assetName = 'tourist_' + i;
+    game.load.spritesheet(assetName, 'assets/' + assetName + '.png', 64, 64);
+  }
+
   // Credit to HorrorPen on open game art
   game.load.audio('music', ['assets/music.mp3', 'assets/music.ogg']);
 }
