@@ -4,8 +4,13 @@ var PLAYER = (function () {
     moving = false,
     facing = 'down',
     acting = false,
+    showMove = false,
     movespeed = 200;
 
+  var speechBubbles = {
+    stop: '',
+    go: ''
+  }
 
   var lightRadius = 150,
     shadowTexture,
@@ -43,6 +48,14 @@ var PLAYER = (function () {
 
     lightTexture.blendMode = Phaser.blendModes.MULTIPLY;
 
+    game.camera.follow(player);
+
+    speechBubbles.go = game.add.sprite(0, 0, 'go_bubble');
+    speechBubbles.stop = game.add.sprite(0, 0, 'stop_bubble');
+
+    speechBubbles.go.visible = false;
+    speechBubbles.stop.visible = false;
+
     return player;
   }
 
@@ -60,18 +73,41 @@ var PLAYER = (function () {
       move('up');
     }
     // Action
-    if (game.GLOBALS.spacebar.isDown) {
+    if (game.GLOBALS.spacebar.isDown && !moving) {
       // Act
       point();
       acting = true;
       // Add tile check here for thing
     } else {
       acting = false;
+
     }
 
 
+    // Orders!
+    if (game.GLOBALS.mKey.isDown) {
+      speechBubbles.go.visible = true;
+      speechBubbles.stop.visible = false;
+
+      showMove = true;
+    } else {
+      if (showMove) {
+        showMove = false;
+        speechBubbles.go.visible = false;
+        speechBubbles.stop.alpha = 1;
+        speechBubbles.stop.visible = true;
+        var bubbleTween = game.add.tween(speechBubbles.stop);
+
+        bubbleTween.to({alpha: 0}, 500);
+        bubbleTween.start();
+      }
+    }
+
+    speechBubbles.stop.x = speechBubbles.go.x = player.x + 90;
+    speechBubbles.stop.y = speechBubbles.go.y = player.y;
+
     // Lighting draw
-    shadowTexture.context.fillStyle = 'rgb(100, 100, 100)';
+    shadowTexture.context.fillStyle = 'rgb(150, 150, 150)';
     shadowTexture.context.fillRect(0, 0, game.width, game.height);
     // Draw circle of light with a soft edge
     var gradient = shadowTexture.context.createRadialGradient(
@@ -84,14 +120,18 @@ var PLAYER = (function () {
     shadowTexture.context.fillStyle = gradient;
     shadowTexture.context.arc(player.x + lightOffset.x, player.y + lightOffset.y,
       lightRadius, 0, Math.PI*2);
-      shadowTexture.context.fill();
+    shadowTexture.context.fill();
 
-      // This just tells the engine it should update the texture cache
-      shadowTexture.dirty = true;
+    // This just tells the engine it should update the texture cache
+    shadowTexture.dirty = true;
+
+    // Idle
+    if (!acting && !moving) {
+      player.animations.stop(facing, true)
+    }
   }
 
   function point() {
-    console.log('point', facing);
     player.animations.stop('point_' + facing, true);
   }
 
@@ -114,7 +154,7 @@ var PLAYER = (function () {
       player.animations.stop(dir, true);
       facing = dir;
     // MOVE!
-    } else {
+  } else if(!acting) {
       moving = true; // now we are moving
       player.animations.play(dir); // play the direction we are moving in
       tween = game.add.tween(player); // new player tween
