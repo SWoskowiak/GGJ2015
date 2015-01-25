@@ -24,7 +24,6 @@ LEVELS = (function () {
 
     // Level 2 setup
     level.two.map.addTilesetImage('logic_tiles', 'logic_tiles');
-    console.log('poo2');
     level.two.layers.logical = level.two.map.createLayer('logical');
 
     // console.log(level.one.layers.misc);
@@ -82,7 +81,6 @@ TILE_PROPS = {
 
 MAPINFO = (function () {
   'use strict';
-
 
   function guardPassable(map, x, y) {
     var tile = level.map.getTile(x, y);

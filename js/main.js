@@ -7,7 +7,7 @@ function preload() {
   // Load the tiles png itself
   game.load.image('tiles', 'assets/tiles.png');
   game.load.image('logic_tiles', 'assets/logic_tiles.png');
-  
+
   // Speech bubbles
   game.load.image('go_bubble', 'assets/go.png');
   game.load.image('stop_bubble', 'assets/stop.png');
@@ -23,7 +23,7 @@ function preload() {
 var GLOBALS = {
   tile_width: 64,
   tile_height: 64
-}
+};
 
 // Game objects
 var level,player,touristList;
@@ -48,7 +48,6 @@ function create() {
   game.GLOBALS.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   game.GLOBALS.mKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
-  console.log('poo');
   touristList = TOURIST.buildChainFromLevel(game, level.two);
   oKey = game.input.keyboard.addKey(Phaser.Keyboard.O);
   iKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
@@ -59,6 +58,7 @@ function create() {
   music.loop = true;
   //music.play();
 }
+
 
 function updateTourists() {
   var i, tourist;
@@ -88,30 +88,30 @@ function updateTourists() {
   });
 }
 
-function updateTourGuideFacing(game) {
+
+function updateTourGuideFacing() {
+  'use strict';
   var tourGuide = touristList[0];
 
-  if (game.GLOBALS.cursors.up.isDown) {
-    tourGuide.facing = DIR.UP;
+  if (!PLAYER.isPointing()) {
+    return;
   }
 
-  if (game.GLOBALS.cursors.down.isDown) {
-    tourGuide.facing = DIR.DOWN;
+  var playerTile = level.two.map.getTileWorldXY(player.x, player.y);
+  var playerOnTourGuide = PIXI.Point.equals(tourGuide.tilePos, new PIXI.Point(playerTile.x, playerTile.y));
+
+  if (!playerOnTourGuide) {
+    return;
   }
 
-  if (game.GLOBALS.cursors.left.isDown) {
-    tourGuide.facing = DIR.LEFT;
-  }
-
-  if (game.GLOBALS.cursors.right.isDown) {
-    tourGuide.facing = DIR.RIGHT;
-  }
+  tourGuide.facing = PLAYER.getFacing();
 }
+
 
 // Update stuff
 function update() {
   PLAYER.update(game);
-  updateTourGuideFacing(game);
+  updateTourGuideFacing();
   updateTourists();
 }
 

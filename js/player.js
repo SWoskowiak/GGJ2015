@@ -59,6 +59,14 @@ var PLAYER = (function () {
     return player;
   }
 
+  function isPointing() {
+    return acting;
+  }
+
+  function getFacing() {
+    return facing;
+  }
+
   function update(game) {
     //player.body.velocity.x = player.body.velocity.y = 0;
 
@@ -175,7 +183,9 @@ var PLAYER = (function () {
   }
 
   return {
+    isPointing: isPointing,
+    getFacing: getFacing,
     build: build,
     update: update
-  }
+  };
 })();
