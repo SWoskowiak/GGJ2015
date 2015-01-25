@@ -3,6 +3,8 @@
 TOURIST = (function () {
   'use strict';
 
+  var goingBackward = false;
+
   function buildChainFromLevel(game, level) {
     var touristPositions = [];
 
@@ -43,6 +45,7 @@ TOURIST = (function () {
       tourist.facing = DIR.RIGHT;
       tourist.tilePos.set(positions[i].x, positions[i].y);
       touristList.push(tourist);
+      updateSpriteCoordsHARD(map, tourist);
     }
 
     return touristList;
@@ -56,6 +59,8 @@ TOURIST = (function () {
     var tourist = {
       sprite: sprite,
       facing: DIR.RIGHT,
+      moving: false,
+      tween: null,
       tilePos: tilePos,
       lastUpdateTime: 0.0,
       nextTourist: nextTourist || null,
@@ -64,7 +69,7 @@ TOURIST = (function () {
       backingUp: false
     };
 
-    updateSpriteCoords(map, tourist);
+    // updateSpriteCoords(map, tourist);
 
     return tourist;
   }
@@ -80,7 +85,10 @@ TOURIST = (function () {
     }
     moved = move(map, tourist, tourist.facing);
 
-    updateSpriteCoords(map, tourist);
+    // updateSpriteCoords(map, tourist);
+    if (moved) {
+      tweenMove(tourist);
+    }
 
     return moved;
   }
@@ -94,7 +102,10 @@ TOURIST = (function () {
       moved = true;
     }
 
-    updateSpriteCoords(map, tourist);
+    // updateSpriteCoords(map, tourist);
+    if (move) {
+      tweenMove(tourist);
+    }
 
     return moved;
   }
@@ -174,20 +185,62 @@ TOURIST = (function () {
   }
 
 
-  function updateTourists(oKey, iKey) {
+  function tweenMove(tourist) {
+    tourist.moving = true; // now we are moving
+    tourist.sprite.animations.play(tourist.facing); // play the direction we are moving in
+    tourist.tween = game.add.tween(tourist.sprite); // new player tween
+
+    switch (tourist.facing) {
+    case DIR.LEFT:
+      tourist.tween.to({x: tourist.sprite.x - 64}, 300);
+      break;
+
+    case DIR.RIGHT:
+      tourist.tween.to({x: tourist.sprite.x + 64}, 300);
+      break;
+
+    case DIR.UP:
+      tourist.tween.to({y: tourist.sprite.y - 64}, 300);
+      break;
+
+    case DIR.DOWN:
+      tourist.tween.to({y: tourist.sprite.y + 64}, 300);
+      break;
+    }
+
+    // What we do when we are done moving
+    tourist.tween.onComplete.add(function () {
+      tourist.moving = false;
+    });
+
+    // Play the tween
+    tourist.tween.start();
+
+    // TOURIST.updateSpriteCoords(level.two.map, tourist);
+  }
+
+
+  function updateTourists(touristList, oKey, iKey) {
+    var finishedMoving = touristList.reduce(function (prev, cur, idx, arr) {
+      return (!prev.moving) && (!cur.moving);
+    });
+
+
+    if (!finishedMoving) {
+      return;
+    }
+
+    console.log('update tourist');
+
     var i, tourist;
-    if (oKey.justUp) {
+    if (goingBackward) {
       for (i = 0; i < touristList.length; i++) {
         tourist = touristList[i];
-        // if step returns false, it means he couldn't move, so
-        // don't keep trying to move
         if (!TOURIST.stepForward(game, level.two.map, tourist)) {
           break;
         }
       }
-      touristList.forEach(function (tourist) {
-      });
-    } else if (iKey.justUp) {
+    } else {
       for (i = touristList.length - 1; i >= 0; i--) {
         tourist = touristList[i];
         // if step returns false, it means he couldn't move, so
@@ -197,14 +250,10 @@ TOURIST = (function () {
         }
       }
     }
-    touristList.forEach(function (tourist) {
-      TOURIST.updateSpriteCoords(level.two.map, tourist);
-    });
   }
 
 
-
-  function updateSpriteCoords(map, tourist) {
+  function updateSpriteCoordsHARD(map, tourist) {
     var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
     tourist.sprite.x = currentTile.worldX;
     tourist.sprite.y = currentTile.worldY;
@@ -216,7 +265,6 @@ TOURIST = (function () {
     stepForward: stepForward,
     stepBackward: stepBackward,
     move: move,
-    updateSpriteCoords: updateSpriteCoords,
     buildChain: buildChain,
     buildChainFromLevel: buildChainFromLevel,
     updateTourists: updateTourists

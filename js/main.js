@@ -112,7 +112,7 @@ function updateTourGuideFacing() {
 function update() {
   PLAYER.update(game);
   updateTourGuideFacing();
-  TOURIST.updateTourists(oKey, iKey);
+  TOURIST.updateTourists(touristList, oKey, iKey);
 }
 
 function render() {
