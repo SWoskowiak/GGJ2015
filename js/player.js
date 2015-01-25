@@ -11,7 +11,7 @@ var PLAYER = (function () {
   var speechBubbles = {
     stop: '',
     go: ''
-  }
+  };
 
   var lightRadius = 150,
     shadowTexture,
@@ -48,7 +48,6 @@ var PLAYER = (function () {
     // Action animations
     player.animations.add('pushButtonUp', [17], 1, true);
 
-    console.log(level.two.map)
     shadowTexture = game.add.bitmapData(1792, 1344);
     lightTexture = game.add.image(0, 0, shadowTexture);
 
@@ -70,6 +69,9 @@ var PLAYER = (function () {
     return pointing;
   }
 
+  function isSayingGo() {
+    return showMove;
+  }
 
   function getFacing() {
     return facing;
@@ -157,21 +159,20 @@ var PLAYER = (function () {
   function canMove(dir, level) {
 
     switch(dir) {
-      case 'left':
+      case DIR.LEFT:
         return MAPINFO.guardPassable(level.two.map, tileX - 1, tileY);
-        break;
-      case 'right':
+
+      case DIR.RIGHT:
         return MAPINFO.guardPassable(level.two.map, tileX + 1, tileY);
-        break;
-      case 'up':
+
+      case DIR.UP:
         return MAPINFO.guardPassable(level.two.map, tileX, tileY - 1);
-        break;
-      case 'down':
+
+      case DIR.DOWN:
         return MAPINFO.guardPassable(level.two.map, tileX, tileY + 1);
-        break;
+
       default:
         return false;
-        break;
     }
   }
 
@@ -186,8 +187,8 @@ var PLAYER = (function () {
       setTimeout(function () {moving = false;}, 150);
       player.animations.stop(dir, true);
       facing = dir;
-    // MOVE!
-  } else if(!pointing && canMove(dir, level)) {
+      // MOVE!
+    } else if(!pointing && canMove(dir, level)) {
       moving = true; // now we are moving
       player.animations.play(dir); // play the direction we are moving in
       tween = game.add.tween(player); // new player tween
@@ -199,7 +200,7 @@ var PLAYER = (function () {
         tileX += 1;
       } else if (dir === 'down') {
         tween.to({y: player.y + 64}, 300);
-        tileY += 1
+        tileY += 1;
       } else if (dir === 'up') {
         tween.to({y: player.y - 64}, 300);
         tileY -= 1;
@@ -209,9 +210,12 @@ var PLAYER = (function () {
       // Play the tween
       tween.start();
     }
+
+    return true;
   }
 
   return {
+    isSayingGo: isSayingGo,
     isPointing: isPointing,
     getFacing: getFacing,
     build: build,

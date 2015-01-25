@@ -45,7 +45,7 @@ TOURIST = (function () {
       tourist.facing = DIR.RIGHT;
       tourist.tilePos.set(positions[i].x, positions[i].y);
       touristList.push(tourist);
-      updateSpriteCoordsHARD(map, tourist);
+      forceUpdateSpriteCoords(map, tourist);
     }
 
     return touristList;
@@ -220,24 +220,20 @@ TOURIST = (function () {
   }
 
 
-  function updateTourists(touristList, oKey, iKey) {
+  function updateTourists(touristList, guardSaysGo, oKey, iKey) {
     var i, tourist;
-    var anyoneMoving = false;
 
-    var touristIndex;
-    for (touristIndex = 0; touristIndex < touristList.length; touristIndex++) {
-      tourist = touristList[touristIndex];
-      if (tourist.moving) {
-        anyoneMoving = true;
-        break;
-      }
+    if (!guardSaysGo) {
+      return;
     }
+
+    var anyoneMoving = touristList.reduce(function (prev, cur) {
+      return prev || cur.moving;
+    }, false);
 
     if (anyoneMoving) {
       return;
     }
-
-    console.log('update tourist' + game.time.now, touristList);
 
     if (!goingBackward) {
       for (i = 0; i < touristList.length; i++) {
@@ -259,7 +255,7 @@ TOURIST = (function () {
   }
 
 
-  function updateSpriteCoordsHARD(map, tourist) {
+  function forceUpdateSpriteCoords(map, tourist) {
     var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
     tourist.sprite.x = currentTile.worldX;
     tourist.sprite.y = currentTile.worldY;
