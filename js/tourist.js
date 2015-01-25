@@ -174,6 +174,36 @@ TOURIST = (function () {
   }
 
 
+  function updateTourists(oKey, iKey) {
+    var i, tourist;
+    if (oKey.justUp) {
+      for (i = 0; i < touristList.length; i++) {
+        tourist = touristList[i];
+        // if step returns false, it means he couldn't move, so
+        // don't keep trying to move
+        if (!TOURIST.stepForward(game, level.two.map, tourist)) {
+          break;
+        }
+      }
+      touristList.forEach(function (tourist) {
+      });
+    } else if (iKey.justUp) {
+      for (i = touristList.length - 1; i >= 0; i--) {
+        tourist = touristList[i];
+        // if step returns false, it means he couldn't move, so
+        // don't keep trying to move
+        if (!TOURIST.stepBackward(game, level.two.map, tourist)) {
+          break;
+        }
+      }
+    }
+    touristList.forEach(function (tourist) {
+      TOURIST.updateSpriteCoords(level.two.map, tourist);
+    });
+  }
+
+
+
   function updateSpriteCoords(map, tourist) {
     var currentTile = map.getTile(tourist.tilePos.x, tourist.tilePos.y, 0);
     tourist.sprite.x = currentTile.worldX;
@@ -188,6 +218,7 @@ TOURIST = (function () {
     move: move,
     updateSpriteCoords: updateSpriteCoords,
     buildChain: buildChain,
-    buildChainFromLevel: buildChainFromLevel
+    buildChainFromLevel: buildChainFromLevel,
+    updateTourists: updateTourists
   };
 })();
