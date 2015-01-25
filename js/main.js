@@ -38,7 +38,7 @@ var GLOBALS = {
 };
 
 // Game objects
-var level,player,touristList;
+var level,player,touristList,goalCoords;
 
 // Controls
 var iKey, oKey;
@@ -72,6 +72,12 @@ function create() {
                                         Number(splitPair[1]));
   // player = PLAYER.build(game, level, { x:2,  y:4});
   player = PLAYER.build(game, level, playerSpawnPos);
+
+
+  // setup the goal tile
+  splitPair = logicalLayer.properties.goal.split(' ');
+  goalCoords = new Phaser.Point(Number(splitPair[0]),
+                                 Number(splitPair[1]));
 
   // ~*Music*~
   var music = game.add.audio('music');
@@ -111,6 +117,10 @@ function update() {
   }
 
   TOURIST.updateTourists(touristList, level.current, PLAYER.isSayingGo(), oKey, iKey);
+
+  // if (TOURIST.wonTheGame) {
+    
+  // }
 }
 
 // function render() {
