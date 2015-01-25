@@ -103,7 +103,7 @@ DIR = {
 TILE_PROPS = {
   // GUARD_PASSABLE: 'guard_passable',
   // TOURIST_PASSABLE: 'tourist_passable',
-  PASSABLE: 'passable',
+  BLOCK_TOURIST: 'block_tourist',
   BREAKABLE: 'breakable'
 };
 
@@ -146,13 +146,18 @@ MAPINFO = (function () {
 
 
   function touristPassable(map, x, y) {
-    // if (tileHasWall(map, x, y)) {
-    //   return false;
-    // }
+    if (tileHasWall(map, x, y)) {
+      return false;
+    }
 
-    // var tile = map.getTile(x, y);
-    // return TILE_PROPS.PASSABLE in tile.properties;
-    return tileHasWall(map, x, y);
+    var doodadsIdx = map.getLayer('doodads');
+    var doodadsTile = map.getTile(x, y, doodadsIdx);
+
+    if (doodadsTile && (TILE_PROPS.BLOCK_TOURIST in doodadsTile.properties)) {
+      return false;
+    }
+
+    return true;
   }
 
 

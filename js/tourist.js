@@ -200,7 +200,7 @@ TOURIST = (function () {
       return false;
     }
 
-    if (MAPINFO.touristPassable(map, nextTilePos.x, nextTilePos.y)) {
+    if (!MAPINFO.touristPassable(map, nextTilePos.x, nextTilePos.y)) {
       return false;
     }
 
