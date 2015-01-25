@@ -62,6 +62,10 @@
          "tileheight":64,
          "tileproperties":
             {
+             "152":
+                {
+                 "block_tourist":""
+                },
              "22":
                 {
                  "breakable":""
