@@ -190,13 +190,17 @@ MAPINFO = (function () {
     return null;
   }
 
-
   function tryRemoveBreakable(map, x, y) {
     var doodadsIdx = map.getLayer('doodads');
 
     var breakableTile = getBreakable(map, x, y);
 
     if (breakableTile) {
+      var explosion = window.game.add.sprite(breakableTile.worldX, breakableTile.worldY, 'explosion');
+      var exAnim = explosion.animations.add('explode', [0,1,2,3,4,5], 20);
+      exAnim.killOnComplete = true;
+      exAnim.play();
+      //explosion.animations.play('explode');
       map.removeTile(x, y, doodadsIdx);
       return true;
     }
