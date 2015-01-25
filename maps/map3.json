@@ -60,6 +60,25 @@
             },
          "spacing":0,
          "tileheight":64,
+         "tileproperties":
+            {
+             "152":
+                {
+                 "block_tourist":""
+                },
+             "53":
+                {
+                 "block_tourist":""
+                },
+             "54":
+                {
+                 "block_tourist":""
+                },
+             "55":
+                {
+                 "block_tourist":""
+                }
+            },
          "tilewidth":64
         }, 
         {

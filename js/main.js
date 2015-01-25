@@ -67,9 +67,9 @@ function create() {
   // Builds out our "player"
 
   var logicalLayer = MAPINFO.getLayerData(level.current.map, 'logical');
-  var splitPair = logicalLayer.properties.player_spawn;
+  var splitPair = logicalLayer.properties.player_spawn.split(' ');
   var playerSpawnPos = new Phaser.Point(Number(splitPair[0]),
-                                        Number(splitPair[splitPair.length - 1]));
+                                        Number(splitPair[1]));
   // player = PLAYER.build(game, level, { x:2,  y:4});
   player = PLAYER.build(game, level, playerSpawnPos);
 
