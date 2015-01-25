@@ -34,6 +34,7 @@ LEVELS = (function () {
     // Level 3 setup
     level.three.map.addTilesetImage('tileset', 'tileset');
     level.three.layers.logical = level.three.map.createLayer('logical');
+    level.three.layers.doodads = level.three.map.createLayer('doodads');
 
     return level;
   }
@@ -98,8 +99,10 @@ DIR = {
 
 
 TILE_PROPS = {
-  GUARD_PASSABLE: 'guard_passable',
-  TOURIST_PASSABLE: 'tourist_passable',
+  // GUARD_PASSABLE: 'guard_passable',
+  // TOURIST_PASSABLE: 'tourist_passable',
+  PASSABLE: 'passable',
+  BREAKABLE: 'breakable'
 };
 
 
@@ -112,14 +115,39 @@ MAPINFO = (function () {
 
 
   function guardPassable(map, x, y) {
-    var tile = map.getTile(x, y);
-    return TILE_PROPS.GUARD_PASSABLE in tile.properties;
+    var logicalIdx = map.getLayer('logical');
+    var logicalTile = map.getTile(x, y, logicalIdx);
+    if (!(TILE_PROPS.PASSABLE in logicalTile.properties)) {
+      return false;
+    }
+
+    var doodadsIdx = map.getLayer('doodads');
+    var doodadsTile = map.getTile(x, y, logicalIdx);
+
+    if (TILE_PROPS.BREAKABLE in doodadsTile.properties) {
+      return false;
+    }
+
+    return true;
   }
 
 
   function touristPassable(map, x, y) {
     var tile = map.getTile(x, y);
-    return TILE_PROPS.TOURIST_PASSABLE in tile.properties;
+    return TILE_PROPS.PASSABLE in tile.properties;
+  }
+
+
+  function tryRemoveBreakable(map, x, y) {
+    var doodadsIdx = map.getLayer('doodads');
+    var doodadsTile = map.getTile(x, y, doodadsIdx);
+
+    if (doodadsTile && TILE_PROPS.BREAKABLE in doodadsTile.properties) {
+      map.removeTile(x, y, doodadsIdx);
+      return true;
+    }
+
+    return false;
   }
 
 
@@ -156,6 +184,7 @@ MAPINFO = (function () {
     setTourist: setTourist,
     tileProps: tileProps,
     tilePropsFromTile: tilePropsFromTile,
-    getLayerData: getLayerData
+    getLayerData: getLayerData,
+    tryRemoveBreakable: tryRemoveBreakable
   };
 })();

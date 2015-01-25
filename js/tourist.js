@@ -87,8 +87,7 @@ TOURIST = (function () {
       tilePos: tilePos,
       lastUpdateTime: 0.0,
       nextTourist: nextTourist || null,
-      moveHistory: [],
-      passableFlag: TILE_PROPS.TOURIST_PASSABLE
+      moveHistory: []
     };
 
     // updateSpriteCoords(map, tourist);
@@ -204,6 +203,13 @@ TOURIST = (function () {
     nextTileProps.occupyingTourist = tourist;
     currentTileProps.occupyingTourist = null;
     setTilePos(tourist, nextTilePos.x, nextTilePos.y);
+
+    // var breakable = MAPINFO.hasBreakable(map, nextTilePos.x, nextTilePos.y);
+    // if (breakable) {
+    //   map.removeTile
+    // }
+
+    MAPINFO.tryRemoveBreakable(map, nextTilePos.x, nextTilePos.y);
 
     return true;
   }
