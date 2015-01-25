@@ -2,7 +2,7 @@ TOURIST = (function () {
   'use strict';
 
 
-  function buildChain(game, positions) {
+  function buildChain(game, positions, options) {
     var touristList = [];
 
     for (var i = 0; i < positions.length; i++) {
@@ -12,6 +12,10 @@ TOURIST = (function () {
       tourist.facing = DIR.RIGHT;
       tourist.tilePos.set(positions[i].x, positions[i].y);
       touristList.push(tourist);
+
+      if (options && 'group' in options) {
+        options.group.add(tourist.sprite);
+      }
     }
 
     return touristList;
@@ -19,25 +23,15 @@ TOURIST = (function () {
 
 
   function build(game, nextTourist) {
-
     var sprite = game.add.sprite(0, 0, 'tourist');
-
-    sprite.scale = new PIXI.Point(0.25, 0.25);
-
-    var TILE_WIDTH = 32;
-    var TILE_HEIGHT = 32;
-
-    var tilePos = new PIXI.Point(1, 1);
-
-    sprite.x = TILE_WIDTH * tilePos.x;
-    sprite.y = TILE_HEIGHT * tilePos.y;
+    var tilePos = new PIXI.Point(0, 0);
 
     return {
       sprite: sprite,
       facing: DIR.RIGHT,
       tilePos: tilePos,
       lastUpdateTime: 0.0,
-      nextTourist: nextTourist,
+      nextTourist: nextTourist || null,
       moveHistory: [],
       passableFlag: TILE_PROPS.TOURIST_PASSABLE,
       backingUp: false
